@@ -16,9 +16,11 @@ class StartScreen extends StatefulWidget {
 }
 
 class _StartScreenState extends State<StartScreen> {
-  late final ThemeData theme;
-  late final ColorScheme colorScheme;
-  late final LinearGradient gradient;
+  // Без final: didChangeDependencies вызывается при каждой смене
+  // унаследованных зависимостей, в том числе при смене темы.
+  late ThemeData theme;
+  late ColorScheme colorScheme;
+  late LinearGradient gradient;
 
   @override
   void didChangeDependencies() {

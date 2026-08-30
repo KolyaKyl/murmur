@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -285,6 +286,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void _showDeleteConfirmDialog(BuildContext context, AppUser? user) {
     if (user == null) return;
     bool isDeleting = false;
+    String? errorText;
+    final passwordController = TextEditingController();
+    final needsPassword = AuthService.needsPasswordToReauthenticate;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -293,10 +297,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           builder: (context, setDialogState) => AlertDialog(
             backgroundColor: Theme.of(context).colorScheme.surfaceDim,
             title: const Text('Delete Profile'),
-            content: Text(
-              isDeleting
-                  ? 'Deleting your data...'
-                  : 'This action will permanently delete your profile and all your data. Are you sure you want to continue?',
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isDeleting
+                      ? 'Deleting your data...'
+                      : 'This action will permanently delete your profile and all your data. Are you sure you want to continue?',
+                ),
+                if (!isDeleting && needsPassword) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm your password',
+                    ),
+                  ),
+                ],
+                if (errorText != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    errorText!,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
+                ],
+              ],
             ),
             actions: [
               if (!isDeleting) ...[
@@ -321,10 +349,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 FilledButton(
                   onPressed: () async {
-                    setDialogState(() => isDeleting = true);
-                    final firebaseService = FirebaseService();
-                    await firebaseService.deleteUserData(user.id);
-                    await AuthService.deleteAccount();
+                    setDialogState(() {
+                      isDeleting = true;
+                      errorText = null;
+                    });
+                    try {
+                      // Переавторизация строго до удаления: иначе можно
+                      // потерять данные и остаться с живым аккаунтом.
+                      await AuthService.reauthenticate(
+                        password: passwordController.text,
+                      );
+                      final firebaseService = FirebaseService();
+                      await firebaseService.deleteUserData(user.id);
+                      await AuthService.deleteAccount();
+                    } on FirebaseAuthException catch (e) {
+                      setDialogState(() {
+                        isDeleting = false;
+                        errorText = e.code == 'wrong-password' ||
+                                e.code == 'invalid-credential'
+                            ? 'Wrong password.'
+                            : e.message ?? 'Could not delete the account.';
+                      });
+                      return;
+                    } catch (e) {
+                      setDialogState(() {
+                        isDeleting = false;
+                        errorText = 'Could not delete the account. Try again.';
+                      });
+                      return;
+                    }
                     ref.read(appUserProvider.notifier).state = null;
                     if (context.mounted) {
                       Navigator.of(context).pushAndRemoveUntil(

@@ -124,6 +124,68 @@ class AuthService {
     await FirebaseAuth.instance.signOut();
   }
 
+  /// Есть ли у текущего аккаунта вход по паролю — тогда для переавторизации
+  /// нужен пароль, молча её не сделать.
+  static bool get needsPasswordToReauthenticate {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+    final ids = user.providerData.map((p) => p.providerId);
+    if (ids.contains('google.com') || ids.contains('apple.com')) return false;
+    return ids.contains('password');
+  }
+
+  /// Firebase требует свежий вход для удаления аккаунта, иначе
+  /// `requires-recent-login`. Вызывать до того, как что-то удалено.
+  static Future<void> reauthenticate({String? password}) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final ids = user.providerData.map((p) => p.providerId).toList();
+
+    if (ids.contains('google.com')) {
+      final googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        throw FirebaseAuthException(
+          code: 'reauth-cancelled',
+          message: 'Sign-in was cancelled.',
+        );
+      }
+      final googleAuth = await googleUser.authentication;
+      await user.reauthenticateWithCredential(
+        GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        ),
+      );
+      return;
+    }
+
+    if (ids.contains('apple.com')) {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [AppleIDAuthorizationScopes.email],
+      );
+      await user.reauthenticateWithCredential(
+        OAuthProvider('apple.com').credential(
+          idToken: appleCredential.identityToken,
+          accessToken: appleCredential.authorizationCode,
+        ),
+      );
+      return;
+    }
+
+    if (ids.contains('password')) {
+      if (password == null || password.isEmpty) {
+        throw FirebaseAuthException(
+          code: 'password-required',
+          message: 'Enter your password to continue.',
+        );
+      }
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: user.email!, password: password),
+      );
+    }
+  }
+
+  /// Предполагает, что [reauthenticate] уже отработал.
   static Future<void> deleteAccount() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;

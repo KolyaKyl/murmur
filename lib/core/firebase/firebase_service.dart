@@ -65,15 +65,10 @@ class FirebaseService {
         _firestore.collection('users').doc(userId).collection('MoodRecords');
 
     if (recordId.isNotEmpty) {
-      final moodRecDoc = moodCollection.doc(recordId);
-
-      try {
-        await moodRecDoc.set(moodData, SetOptions(merge: true));
-      } catch (e) {
-        debugPrint('Error saving user: $e');
-        await moodCollection.add(moodData);
-        rethrow;
-      }
+      // Раньше при ошибке set здесь делался add — и в базе оставалась
+      // вторая копия записи, которую никто не удалял. Теперь просто
+      // отдаём ошибку наверх, вызывающий показывает её пользователю.
+      await moodCollection.doc(recordId).set(moodData, SetOptions(merge: true));
     } else {
       await moodCollection.add(moodData);
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Радиусы. До этого по коду были рассыпаны 12, 16, 8, 10, 20, 4, 2 —
 /// без всякой системы. Здесь их четыре, и больше добавлять не нужно.
@@ -212,10 +211,10 @@ class AppTheme {
     );
   }
 
-  /// Manrope: спокойная геометрическая гротеска, читается на мелких кеглях.
-  /// Меняется здесь одной строкой.
+  /// Гарнитура системная — как было до появления этого файла.
+  /// Здесь задаются только роли: цвета и насыщенности.
   static TextTheme _textTheme(TextTheme base, ColorScheme scheme) {
-    final t = GoogleFonts.manropeTextTheme(base).apply(
+    final t = base.apply(
       bodyColor: scheme.onSurface,
       displayColor: scheme.onSurface,
     );

@@ -45,9 +45,11 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     if (appUser != null) {
       ref.read(appUserProvider.notifier).state = appUser;
       // null означает "пользователь никогда не выбирал" — тогда остаётся
-      // локальное значение, а не насильно светлая тема.
-      if (appUser.isDarkTheme != null) {
-        await ref.read(themeProvider.notifier).setDark(appUser.isDarkTheme!);
+      // локальное значение. Совпадающее значение не пишем: это лишняя
+      // перерисовка всего дерева ради того же самого.
+      final remote = appUser.isDarkTheme;
+      if (remote != null && remote != ref.read(themeProvider)) {
+        await ref.read(themeProvider.notifier).setDark(remote);
       }
     }
 
