@@ -2,8 +2,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/models/app_user.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/core/models/app_user.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthService {

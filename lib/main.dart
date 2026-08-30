@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:self_screen/config/firebase_options.dart';
-import 'package:self_screen/models/app_user.dart';
-import 'package:self_screen/screens/login/auth_gate.dart';
-import 'package:self_screen/screens/login/forgot_password.dart';
-import 'package:self_screen/screens/login/login_screen.dart';
-import 'package:self_screen/screens/login/signup_screen.dart';
-import 'package:self_screen/screens/login/start_screen.dart';
-import 'package:self_screen/theme/theme.dart';
+import 'package:murmur/core/firebase/firebase_options.dart';
+import 'package:murmur/core/models/app_user.dart';
+import 'package:murmur/features/auth/screens/auth_gate.dart';
+import 'package:murmur/features/auth/screens/forgot_password_screen.dart';
+import 'package:murmur/features/auth/screens/login_screen.dart';
+import 'package:murmur/features/auth/screens/signup_screen.dart';
+import 'package:murmur/features/auth/screens/start_screen.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

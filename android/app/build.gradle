@@ -14,7 +14,7 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "app.fone.self_screen"
+    namespace = "app.fone.murmur"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 

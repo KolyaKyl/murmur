@@ -1,5 +1,5 @@
-name: self_screen
-description: "self screen app."
+name: murmur
+description: "Murmur — приложение для успокоения, сна и работы с эмоциональным состоянием."
 publish_to: 'none'
 version: 1.0.0+2
 

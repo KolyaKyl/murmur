@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:self_screen/config/auth_services.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/screens/login/login_screen.dart';
-import 'package:self_screen/screens/login/signup_screen.dart';
-import 'package:self_screen/screens/login/terms_screen.dart';
-import 'package:self_screen/widgets/loading_dialog.dart';
+import 'package:murmur/features/auth/auth_service.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/features/auth/screens/login_screen.dart';
+import 'package:murmur/features/auth/screens/signup_screen.dart';
+import 'package:murmur/features/auth/screens/terms_screen.dart';
+import 'package:murmur/core/widgets/loading_dialog.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -160,7 +160,7 @@ class _StartScreenState extends State<StartScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Self Screen',
+                  'Murmur',
                   style: theme.textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 24),

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/main.dart';
-import 'package:self_screen/models/app_user.dart';
-import 'package:self_screen/models/mood_record.dart';
-import 'package:self_screen/widgets/analysis/mood_chart.dart';
-import 'package:self_screen/widgets/analysis/mood_curve_day.dart';
-import 'package:self_screen/widgets/analysis/mood_record_card.dart';
-import 'package:self_screen/widgets/saved_dialog.dart';
-import 'package:self_screen/widgets/analysis/wellness_index.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/main.dart';
+import 'package:murmur/core/models/app_user.dart';
+import 'package:murmur/features/mood/models/mood_record.dart';
+import 'package:murmur/features/mood/widgets/analysis/mood_chart.dart';
+import 'package:murmur/features/mood/widgets/analysis/mood_curve_day.dart';
+import 'package:murmur/features/mood/widgets/analysis/mood_record_card.dart';
+import 'package:murmur/core/widgets/saved_dialog.dart';
+import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
 
 class AnalysisScreen extends ConsumerStatefulWidget {
   final GlobalKey<WellnessCardState> wellnessCardKey;

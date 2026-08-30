@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:self_screen/models/mood_record.dart';
+import 'package:murmur/features/mood/models/mood_record.dart';
 
 class DailyMoodCurveChart extends StatefulWidget {
   final List<MoodRecord> records;

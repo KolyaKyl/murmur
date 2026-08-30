@@ -1,8 +1,8 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/config/auth_services.dart';
-import 'package:self_screen/widgets/loading_dialog.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/features/auth/auth_service.dart';
+import 'package:murmur/core/widgets/loading_dialog.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -291,7 +291,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Self Screen', style: theme.textTheme.headlineMedium),
+                  Text('Murmur', style: theme.textTheme.headlineMedium),
                   const SizedBox(height: 32),
 
                   // Username

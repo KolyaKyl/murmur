@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/widgets/loading_dialog.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/core/widgets/loading_dialog.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -139,7 +139,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Self Screen', style: theme.textTheme.headlineMedium),
+                  Text('Murmur', style: theme.textTheme.headlineMedium),
                   const SizedBox(height: 32),
                   TextField(
                     controller: _emailController,

@@ -5,10 +5,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:self_screen/models/app_user.dart';
-import 'package:self_screen/models/emotion.dart';
-import 'package:self_screen/models/mood_record.dart';
-import 'package:self_screen/widgets/analysis/wellness_index.dart';
+import 'package:murmur/core/models/app_user.dart';
+import 'package:murmur/features/mood/models/emotion.dart';
+import 'package:murmur/features/mood/models/mood_record.dart';
+import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
 
 class FirebaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;

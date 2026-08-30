@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/screens/analysis_screen.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/features/mood/screens/analysis_screen.dart';
 
 class WellnessCard extends StatefulWidget {
   final int moodIndex;

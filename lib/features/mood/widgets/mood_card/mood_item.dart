@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/models/app_user.dart';
-import 'package:self_screen/models/emotion.dart';
-import 'package:self_screen/widgets/mood_card/show_reg_dialog.dart';
-import 'package:self_screen/widgets/saved_dialog.dart';
-import 'package:self_screen/widgets/analysis/wellness_index.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/core/models/app_user.dart';
+import 'package:murmur/features/mood/models/emotion.dart';
+import 'package:murmur/features/mood/widgets/mood_card/show_reg_dialog.dart';
+import 'package:murmur/core/widgets/saved_dialog.dart';
+import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
 
 class MoodItem extends StatelessWidget {
   final AppUser appUser;

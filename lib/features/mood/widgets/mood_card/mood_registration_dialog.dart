@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:self_screen/models/emotion.dart';
-import 'package:self_screen/widgets/mood_card/level_card.dart';
+import 'package:murmur/features/mood/models/emotion.dart';
+import 'package:murmur/features/mood/widgets/mood_card/level_card.dart';
 
 class MoodRegistrationDialog extends StatefulWidget {
   final Emotion emotion;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:self_screen/config/auth_services.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/main.dart';
-import 'package:self_screen/models/emotion.dart';
-import 'package:self_screen/screens/login/auth_gate.dart';
-import 'package:self_screen/widgets/mood_card/mood_card.dart';
-import 'package:self_screen/widgets/analysis/wellness_index.dart';
+import 'package:murmur/features/auth/auth_service.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/main.dart';
+import 'package:murmur/features/mood/models/emotion.dart';
+import 'package:murmur/features/auth/screens/auth_gate.dart';
+import 'package:murmur/features/mood/widgets/mood_card/mood_card.dart';
+import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -120,7 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     snap: true,
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     elevation: 0,
-                    title: const Text('Self Screen'),
+                    title: const Text('Murmur'),
                   ),
                   SliverToBoxAdapter(
                     child: Padding(

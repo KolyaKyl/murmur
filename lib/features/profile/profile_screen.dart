@@ -5,13 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:self_screen/config/auth_services.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/main.dart';
-import 'package:self_screen/models/app_user.dart';
-import 'package:self_screen/screens/analysis_screen.dart';
-import 'package:self_screen/screens/login/auth_gate.dart';
-import 'package:self_screen/widgets/analysis/wellness_index.dart';
+import 'package:murmur/features/auth/auth_service.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/main.dart';
+import 'package:murmur/core/models/app_user.dart';
+import 'package:murmur/features/mood/screens/analysis_screen.dart';
+import 'package:murmur/features/auth/screens/auth_gate.dart';
+import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
 
 /// Заготовка таба «Профиль». Содержимое перенесено из удалённого AppDrawer
 /// как есть, кроме психологических тестов. На экран пока никто не ведёт —

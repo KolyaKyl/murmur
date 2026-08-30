@@ -150,7 +150,7 @@ class _TermsScreenState extends State<TermsScreen> {
                   title: '4. Privacy and Data Protection',
                   body:
                       '\n4.1. Data Collection\nWe respect your privacy and collect only the data you provide, including mood entries, emotional tags, notes, test responses, and app usage information. This data helps us deliver app features and personalized insights tailored to you.\n \n4.2. Use and Sharing of Data\nYour data is used exclusively to improve app functionality and your user experience. We do not sell or share your personal information with third parties, except when required by law. Aggregated and anonymized data may be used for app improvements.\n \n4.3. Security and Your Rights\nWe implement reasonable security measures to protect your data but cannot guarantee absolute security. You can update or delete your account information at any time via the App\'s account settings. You also have the right to request correction, or deletion of your data by contacting us at ',
-                  emailEnd: 'support@selfscreen.app'),
+                  emailEnd: 'support@murmur.app'),
             ),
           ),
           SliverToBoxAdapter(
@@ -200,7 +200,7 @@ class _TermsScreenState extends State<TermsScreen> {
                 title: '9. Contact Information',
                 body:
                     '\nFor questions, concerns, or requests related to these Terms, please contact us at:',
-                emailEnd: 'support@selfscreen.app',
+                emailEnd: 'support@murmur.app',
               ),
             ),
           ),

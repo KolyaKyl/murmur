@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:self_screen/config/firebase_service.dart';
-import 'package:self_screen/main.dart';
-import 'package:self_screen/models/app_user.dart';
-import 'package:self_screen/screens/home_screen.dart';
-import 'package:self_screen/screens/login/start_screen.dart';
+import 'package:murmur/core/firebase/firebase_service.dart';
+import 'package:murmur/main.dart';
+import 'package:murmur/core/models/app_user.dart';
+import 'package:murmur/features/home/home_screen.dart';
+import 'package:murmur/features/auth/screens/start_screen.dart';
 
 class AuthGate extends ConsumerStatefulWidget {
   const AuthGate({super.key});
