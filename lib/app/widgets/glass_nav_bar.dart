@@ -177,49 +177,46 @@ class _NavButton extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final color = selected ? scheme.onSurface : scheme.onSurfaceVariant;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: onTap,
-        // SizedBox.expand обязателен: без него Column сжимается по ширине
-        // до самого широкого потомка — подписи, — и подсветка нажатия
-        // выходит уже указателя.
-        child: SizedBox.expand(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _Glyph(item: item, selected: selected, color: color),
-              // AnimatedAlign с heightFactor схлопывает подпись без переполнения:
-              // высота едет к нулю, а не текст ужимается в остаток.
-              ClipRect(
-                child: AnimatedAlign(
+    // GestureDetector, а не InkWell: подсветка нажатия спорила с бегунком.
+    // opaque — чтобы ловились тапы по пустому месту ячейки, а не только
+    // по иконке с подписью.
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox.expand(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _Glyph(item: item, selected: selected, color: color),
+            // AnimatedAlign с heightFactor схлопывает подпись без переполнения:
+            // высота едет к нулю, а не текст ужимается в остаток.
+            ClipRect(
+              child: AnimatedAlign(
+                duration: GlassNavBar.animation,
+                curve: Curves.easeOut,
+                alignment: Alignment.topCenter,
+                heightFactor: collapsed ? 0 : 1,
+                child: AnimatedOpacity(
                   duration: GlassNavBar.animation,
-                  curve: Curves.easeOut,
-                  alignment: Alignment.topCenter,
-                  heightFactor: collapsed ? 0 : 1,
-                  child: AnimatedOpacity(
-                    duration: GlassNavBar.animation,
-                    opacity: collapsed ? 0 : 1,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        item.label,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: color,
-                              fontWeight:
-                                  selected ? FontWeight.w600 : FontWeight.w400,
-                            ),
-                        maxLines: 1,
-                        textScaler: const TextScaler.linear(1.0),
-                      ),
+                  opacity: collapsed ? 0 : 1,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      item.label,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: color,
+                            fontWeight:
+                                selected ? FontWeight.w600 : FontWeight.w400,
+                          ),
+                      maxLines: 1,
+                      textScaler: const TextScaler.linear(1.0),
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
