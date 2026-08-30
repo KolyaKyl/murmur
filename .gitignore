@@ -68,3 +68,6 @@ key.properties
 # Сгенерированное Flutter, содержит абсолютные пути машины
 ios/Flutter/Generated.xcconfig
 ios/Flutter/flutter_export_environment.sh
+
+# Рабочие заметки для Claude — только локально, в репозиторий не пускать
+claude/
