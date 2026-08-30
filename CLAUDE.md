@@ -53,8 +53,6 @@ Flutter-приложение для успокоения, сна и работы
   Свободны по проверке: Hammock, Rustle, Meadow.
   Не проверялись: Breather, Lento, Catnap, Den, Steady, Hum, Undertone, Siesta, Pitter.
 - **dart-пакет остаётся `self_screen`** пока имя не выбрано — чтобы не гонять sed по 25 файлам дважды
-- `minSdkVersion` — Flutter при сборке заменил явную `23` на `flutter.minSdkVersion`.
-  Решить: откатить на явную (Firebase требует 23) или оставить
 
 ---
 
@@ -170,6 +168,9 @@ users/{uid}/favorites/{soundId}, users/{uid}/MoodRecords/*
   До Фазы 1 приложение пишет в боевую базу старого продукта — на выпиливании не страшно,
   но **до работы над звуками новый проект обязателен**
 - `web/`, `macos/`, `windows/`, `linux/` не в репозитории — приложение только iOS + Android
+- **`minSdkVersion` держим явной цифрой `23`**, не `flutter.minSdkVersion`. Flutter при сборке
+  пытается подставить своё значение — откатывать. Явная цифра нужна, чтобы минимальная версия
+  Android не плавала при обновлениях Flutter; Firebase требует минимум 23
 - При заведении нового Firebase два решения необратимы: **регион Firestore** и то, что
   Cloud Storage у новых проектов требует Blaze
 
