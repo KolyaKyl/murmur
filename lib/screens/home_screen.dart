@@ -5,9 +5,7 @@ import 'package:self_screen/config/firebase_service.dart';
 import 'package:self_screen/main.dart';
 import 'package:self_screen/models/emotion.dart';
 import 'package:self_screen/screens/login/auth_gate.dart';
-import 'package:self_screen/widgets/drawer.dart';
 import 'package:self_screen/widgets/mood_card/mood_card.dart';
-import 'package:self_screen/widgets/test_widgets/tests_section.dart';
 import 'package:self_screen/widgets/analysis/wellness_index.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -23,7 +21,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final GlobalKey<MoodCardState> _moodCardKey = GlobalKey<MoodCardState>();
   final GlobalKey<WellnessCardState> _wellnessCardKey =
       GlobalKey<WellnessCardState>();
-  Key testsSectionKey = UniqueKey();
 
   List<Emotion> emotions = [];
   int moodIndex = 0;
@@ -45,7 +42,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (mounted) {
       setState(() {
-        testsSectionKey = UniqueKey();
         isLoading = false;
       });
     }
@@ -81,7 +77,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     return Scaffold(
-      drawer: AppDrawer(wellnessCardKey: _wellnessCardKey),
       body: isLoading
           ? Center(
               child: Container(
@@ -149,19 +144,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             key: _moodCardKey,
                             wellnessCardKey: _wellnessCardKey,
                           ),
-                          SizedBox(
-                              height:
-                                  MediaQuery.of(context).size.height * 0.01),
-                          Text('Psychological tests',
-                              style: textTheme.bodyLarge),
                         ],
                       ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: TestsSection(
-                      key: testsSectionKey,
-                      appUser: appUser,
                     ),
                   ),
                   SliverToBoxAdapter(

@@ -8,9 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:self_screen/models/app_user.dart';
 import 'package:self_screen/models/emotion.dart';
 import 'package:self_screen/models/mood_record.dart';
-import 'package:self_screen/models/psychological_test.dart';
-import 'package:self_screen/models/question_answer.dart';
-import 'package:self_screen/models/test_result.dart';
 import 'package:self_screen/widgets/analysis/wellness_index.dart';
 
 class FirebaseService {
@@ -267,144 +264,15 @@ class FirebaseService {
       debugPrint('Error deleting profile photos: $e');
     }
 
-    // 2. Удаляем TestResults
-    final testResultsCol = userDoc.collection('TestsResults');
-    final testResultsSnap = await testResultsCol.get();
-    for (final doc in testResultsSnap.docs) {
-      await doc.reference.delete();
-    }
-
-    // 3. Удаляем MoodRecords
+    // 2. Удаляем MoodRecords
     final moodRecordsCol = userDoc.collection('MoodRecords');
     final moodRecordsSnap = await moodRecordsCol.get();
     for (final doc in moodRecordsSnap.docs) {
       await doc.reference.delete();
     }
 
-    // 4. Удаляем документ пользователя
+    // 3. Удаляем документ пользователя
     await userDoc.delete();
-  }
-
-// tests
-  Future<List<Question>> fetchTestQuestions(String testId) async {
-    try {
-      final querySnapshot = await _firestore
-          .collection('tests')
-          .doc(testId)
-          .collection('Questions')
-          .orderBy('Order')
-          .get();
-
-      return querySnapshot.docs
-          .map((doc) => Question.fromFirestore(doc.data()))
-          .toList();
-    } catch (e) {
-      debugPrint('Error fetching test questions: $e');
-      return [];
-    }
-  }
-
-//admin tool
-  Future<void> saveTestResult({
-    required String userId,
-    required PsychologicalTest test,
-    required int score,
-  }) async {
-    int maxLevel = getMaxLevel(test.levels);
-    final resultMap = getRecommendation(score, test.levels);
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('TestsResults')
-          .add({
-        'testId': test.id,
-        'title': test.title,
-        'subname': test.subname,
-        'helper': test.helper,
-        'score': score,
-        'result': resultMap['result'],
-        'recommendation': resultMap['recommendation'],
-        'timestamp': Timestamp.fromDate(DateTime.now()),
-        'maxLevel': maxLevel - 1,
-      });
-    } catch (e) {
-      debugPrint('Error saving test result: $e');
-      rethrow;
-    }
-  }
-
-  int getMaxLevel(List<Map<String, dynamic>> levels) {
-    return levels
-        .map((level) => level['max'] ?? 0)
-        .fold<int>(0, (prev, max) => max > prev ? max : prev);
-  }
-
-  Map<String, String> getRecommendation(
-      int score, List<Map<String, dynamic>> levels) {
-    for (final level in levels) {
-      final int min = level['min'] ?? 0;
-      final int max = level['max'] ?? 0;
-      final String recommendation = level['recommendation'] ?? '';
-      final String result = level['result'] ?? '';
-
-      if (score >= min && score < max) {
-        return {
-          'result': result,
-          'recommendation': recommendation,
-        };
-      }
-    }
-    return {
-      'result': 'Unknown',
-      'recommendation': 'Score is out of range.',
-    };
-  }
-
-  Future<Map<String, TestResult>> fetchLatestUserTestResults(
-    String userId,
-    List<PsychologicalTest> tests,
-  ) async {
-    // final firestore = FirebaseFirestore.instance;
-
-    // Получаем результаты пользователя, отсортированные по времени
-    final resultsSnapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('TestsResults')
-        .orderBy('timestamp', descending: true)
-        .get();
-
-    final results = resultsSnapshot.docs;
-
-    // Преобразуем в Map<testId, TestResult>, оставляя только последний результат для каждого теста
-    final Map<String, TestResult> latestResultsByTestId = {};
-
-    for (var resultDoc in results) {
-      final data = resultDoc.data();
-      final testId = data['testId'];
-      if (testId != null && !latestResultsByTestId.containsKey(testId)) {
-        latestResultsByTestId[testId] = TestResult.fromMap(resultDoc.id, data);
-      }
-    }
-
-    return latestResultsByTestId;
-  }
-
-  Future<List<TestResult>> fetchUserTestResults(
-      String userId, String testId) async {
-    final querySnapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('TestsResults')
-        .where('testId', isEqualTo: testId)
-        .orderBy('timestamp', descending: true)
-        .get();
-
-    return querySnapshot.docs
-        .map((doc) => TestResult.fromMap(doc.id, doc.data()))
-        .toList();
   }
 
 //google analytics
