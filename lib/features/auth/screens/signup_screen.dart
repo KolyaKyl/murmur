@@ -204,7 +204,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer.withAlpha(55),
+            color: colorScheme.surfaceContainer.withAlpha(18),
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),

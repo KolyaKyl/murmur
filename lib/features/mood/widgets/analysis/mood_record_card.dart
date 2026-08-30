@@ -280,7 +280,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                             child: Container(
                               decoration: BoxDecoration(
                                 color:
-                                    colorScheme.surfaceContainer.withAlpha(55),
+                                    colorScheme.surfaceContainer.withAlpha(18),
                                 borderRadius:
                                     BorderRadius.circular(AppRadius.lg),
                               ),

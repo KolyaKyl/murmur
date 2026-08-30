@@ -13,6 +13,7 @@ import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/mood/screens/analysis_screen.dart';
 import 'package:murmur/features/auth/screens/auth_gate.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/app/widgets/glass_nav_bar.dart';
 
 /// Заготовка таба «Профиль». Содержимое перенесено из удалённого AppDrawer
 /// как есть, кроме психологических тестов. На экран пока никто не ведёт —
@@ -380,7 +381,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     }
                     ref.read(appUserProvider.notifier).state = null;
                     if (context.mounted) {
-                      Navigator.of(context).pushAndRemoveUntil(
+                      Navigator.of(context, rootNavigator: true)
+                          .pushAndRemoveUntil(
                         MaterialPageRoute(builder: (_) => const AuthGate()),
                         (route) => false,
                       );
@@ -428,7 +430,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       body: ListView(
-        padding: EdgeInsets.zero,
+        padding: EdgeInsets.only(bottom: GlassNavBar.contentInset(context)),
         children: [
           const SizedBox(height: kToolbarHeight),
           Padding(
@@ -580,7 +582,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               await AuthService.signOut();
               ref.read(appUserProvider.notifier).state = null;
               if (context.mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
+                Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (_) => const AuthGate()),
                   (route) => false,
                 );

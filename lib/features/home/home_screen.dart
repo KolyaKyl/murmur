@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:murmur/app/widgets/glass_nav_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/features/auth/auth_service.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
@@ -75,7 +76,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   await AuthService.signOut();
                   ref.read(appUserProvider.notifier).state = null;
                   if (context.mounted) {
-                    Navigator.of(context).pushAndRemoveUntil(
+                    Navigator.of(context, rootNavigator: true)
+                        .pushAndRemoveUntil(
                       MaterialPageRoute(builder: (_) => const AuthGate()),
                       (route) => false,
                     );
@@ -182,9 +184,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                       ),
+                      // Место под плавающий бар, иначе последний элемент
+                      // прячется под стеклом.
                       SliverToBoxAdapter(
-                        child: SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.01),
+                        child:
+                            SizedBox(height: GlassNavBar.contentInset(context)),
                       ),
                     ],
                   ),

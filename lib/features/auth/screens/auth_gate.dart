@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/app/providers.dart';
 import 'package:murmur/core/models/app_user.dart';
-import 'package:murmur/features/home/home_screen.dart';
+import 'package:murmur/app/main_shell.dart';
 import 'package:murmur/features/auth/screens/start_screen.dart';
 
 class AuthGate extends ConsumerStatefulWidget {
@@ -67,7 +67,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     if (FirebaseAuth.instance.currentUser == null) {
       return const StartScreen();
     } else {
-      return const HomeScreen();
+      return const MainShell();
     }
   }
 }

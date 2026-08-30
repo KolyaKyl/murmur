@@ -124,7 +124,7 @@ class _LevelCardState extends State<LevelCard>
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(25, 16, 25, 12),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainer.withAlpha(55),
+                    color: colorScheme.surfaceContainer.withAlpha(18),
                     borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),
                   child: Column(

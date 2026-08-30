@@ -101,9 +101,11 @@ class AppTheme {
   /// Палитра намеренно оставлена прежней — переносим её в систему,
   /// а не придумываем новую.
   static const _lightScheme = ColorScheme.light(
-    primary: Colors.blue,
-    secondary: Colors.purple,
-    onPrimaryFixed: Colors.orange,
+    // Насыщенные, а не базовые Material-оттенки: они держат глубину
+    // под градиентом и не сереют.
+    primary: Color(0xFF2962FF),
+    secondary: Color(0xFF6200EA),
+    onPrimaryFixed: Color(0xFFFF6D00),
     tertiary: Color.fromARGB(255, 255, 255, 154),
     surface: Color.fromARGB(255, 225, 225, 225),
     surfaceDim: Color.fromARGB(235, 215, 215, 215),
@@ -118,9 +120,11 @@ class AppTheme {
   );
 
   static const _darkScheme = ColorScheme.dark(
-    primary: Colors.blue,
-    secondary: Colors.purple,
-    onPrimaryFixed: Colors.orange,
+    // На тёмном фоне те же цвета берём на тон светлее,
+    // иначе градиент проваливается в фон.
+    primary: Color(0xFF2979FF),
+    secondary: Color(0xFF7C4DFF),
+    onPrimaryFixed: Color(0xFFFF9100),
     tertiary: Color.fromARGB(70, 0, 162, 255),
     surface: Color.fromARGB(255, 30, 30, 30),
     surfaceDim: Color.fromARGB(235, 30, 30, 30),

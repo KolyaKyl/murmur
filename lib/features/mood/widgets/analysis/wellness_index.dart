@@ -141,7 +141,7 @@ class _WellnessCardState extends ConsumerState<WellnessCard>
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(20, 2, 20, 4),
                     decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainer.withAlpha(55),
+                      color: colorScheme.surfaceContainer.withAlpha(18),
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                     ),
                     child: Column(

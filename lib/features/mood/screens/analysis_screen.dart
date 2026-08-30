@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:murmur/app/widgets/glass_nav_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/app/providers.dart';
@@ -299,6 +300,10 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                             ),
                           ),
                         ),
+                  // Место под плавающий бар.
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: GlassNavBar.contentInset(context)),
+                  ),
                 ],
               ),
             ),
