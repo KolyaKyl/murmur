@@ -6,25 +6,25 @@ import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/features/mood/models/mood_record.dart';
 import 'package:murmur/features/mood/widgets/mood_card/show_reg_dialog.dart';
-import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:murmur/app/providers.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
-class MoodRecordCard extends StatefulWidget {
+class MoodRecordCard extends ConsumerStatefulWidget {
   final MoodRecord record;
   final AppUser appUser;
-  final GlobalKey<WellnessCardState> wellnessCardKey;
   final Function(bool) update;
   const MoodRecordCard(
       {super.key,
       required this.record,
       required this.appUser,
-      required this.wellnessCardKey,
       required this.update});
 
   @override
-  State<MoodRecordCard> createState() => MoodRecordCardState();
+  ConsumerState<MoodRecordCard> createState() => MoodRecordCardState();
 }
 
-class MoodRecordCardState extends State<MoodRecordCard> {
+class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
   String convertToIndex(double moodValue) {
     final index = ((moodValue + 1) / 2) * 100;
     return index.round().clamp(0, 100).toString();
@@ -38,13 +38,14 @@ class MoodRecordCardState extends State<MoodRecordCard> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg)),
       clipBehavior: Clip.antiAlias,
       child: Container(
         padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +58,8 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                 children: [
                   Text(
                     'Mood Record',
-                    style: textTheme.labelMedium?.copyWith(color: Colors.grey),
+                    style: textTheme.labelMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     textScaler: TextScaler.linear(1.0),
@@ -66,7 +68,8 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                     DateFormat('yyyy-MM-dd HH:mm').format(
                       widget.record.timestamp,
                     ),
-                    style: textTheme.labelMedium?.copyWith(color: Colors.grey),
+                    style: textTheme.labelMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     textScaler: TextScaler.linear(1.0),
@@ -79,7 +82,7 @@ class MoodRecordCardState extends State<MoodRecordCard> {
             ),
             //colors/level/emotion/index
             ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
               child: Stack(
                 children: [
                   // Color level
@@ -168,7 +171,8 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                               ],
                               elevation: 4,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.sm),
                               ),
                             );
                             if (!context.mounted) return;
@@ -185,7 +189,7 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                                   emotion: Emotion.fromMap(
                                       widget.record.toMap(),
                                       id: widget.record.emotionId),
-                                  wellnessCardKey: widget.wellnessCardKey,
+                                  ref: ref,
                                   recordId: widget.record.id);
                               if (updtRequired) widget.update(true);
                             } else if (result == 'delete') {
@@ -203,12 +207,13 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                                       },
                                       style: FilledButton.styleFrom(
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                              AppRadius.md),
                                         ),
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16, vertical: 8),
-                                        foregroundColor: Colors.red,
+                                        foregroundColor:
+                                            Theme.of(context).colorScheme.error,
                                         backgroundColor: Colors.transparent,
                                       ),
                                       child: Text(
@@ -218,7 +223,9 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                                             .titleLarge
                                             ?.copyWith(
                                               fontSize: 18,
-                                              color: Colors.red,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error,
                                             ),
                                       ),
                                     ),
@@ -226,21 +233,26 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                                       onPressed: () async {
                                         final firebaseService =
                                             FirebaseService();
-                                        updtRequired = await firebaseService
+                                        final newIndex = await firebaseService
                                             .deleteMoodRecord(
                                           widget.appUser.id,
                                           widget.record.id,
-                                          widget.wellnessCardKey,
                                         );
-                                        if (updtRequired) widget.update(false);
+                                        updtRequired = newIndex != null;
+                                        if (newIndex != null) {
+                                          ref
+                                              .read(moodIndexProvider.notifier)
+                                              .state = newIndex;
+                                          widget.update(false);
+                                        }
 
                                         if (!context.mounted) return;
                                         Navigator.pop(context);
                                       },
                                       style: FilledButton.styleFrom(
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                              AppRadius.md),
                                         ),
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16, vertical: 8),
@@ -263,13 +275,14 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                             }
                           },
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
                             onTap: () {},
                             child: Container(
                               decoration: BoxDecoration(
                                 color:
                                     colorScheme.surfaceContainer.withAlpha(55),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.lg),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -397,8 +410,10 @@ class MoodRecordCardState extends State<MoodRecordCard> {
                           children: [
                             Text(
                               'Hold for options',
-                              style: textTheme.labelMedium
-                                  ?.copyWith(color: Colors.grey),
+                              style: textTheme.labelMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
@@ -416,7 +431,8 @@ class MoodRecordCardState extends State<MoodRecordCard> {
               const SizedBox(height: 8),
               Text(
                 'Triggers:',
-                style: textTheme.labelMedium?.copyWith(color: Colors.grey),
+                style: textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 textScaler: TextScaler.linear(1.0),
@@ -455,7 +471,8 @@ class MoodRecordCardState extends State<MoodRecordCard> {
             if (widget.record.note.isNotEmpty) ...[
               Text(
                 'Note:',
-                style: textTheme.labelMedium?.copyWith(color: Colors.grey),
+                style: textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 textScaler: TextScaler.linear(1.0),
@@ -463,7 +480,7 @@ class MoodRecordCardState extends State<MoodRecordCard> {
               Text(
                 widget.record.note,
                 style: textTheme.labelMedium?.copyWith(
-                  // color: Colors.grey,
+                  // color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
                 ),

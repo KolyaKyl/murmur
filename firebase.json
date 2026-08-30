@@ -3,29 +3,34 @@
     "platforms": {
       "android": {
         "default": {
-          "projectId": "self-screen-1de5f",
-          "appId": "1:299353196169:android:92cfd5b04e7737b4172858",
+          "projectId": "murmur-2916d",
+          "appId": "1:86292750316:android:129ec7aed8ec8115a3eac9",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "ios": {
         "default": {
-          "projectId": "self-screen-1de5f",
-          "appId": "1:299353196169:ios:a664eb503ddf4243172858",
+          "projectId": "murmur-2916d",
+          "appId": "1:86292750316:ios:130aa8b29c23223ea3eac9",
           "uploadDebugSymbols": false,
           "fileOutput": "ios/Runner/GoogleService-Info.plist"
         }
       },
       "dart": {
-        "lib/firebase_options.dart": {
-          "projectId": "self-screen-1de5f",
+        "lib/core/firebase/firebase_options.dart": {
+          "projectId": "murmur-2916d",
           "configurations": {
-            "android": "1:299353196169:android:92cfd5b04e7737b4172858",
-            "ios": "1:299353196169:ios:a664eb503ddf4243172858",
-            "web": "1:299353196169:web:c441e25eb5d90e6a172858"
+            "android": "1:86292750316:android:129ec7aed8ec8115a3eac9",
+            "ios": "1:86292750316:ios:130aa8b29c23223ea3eac9"
           }
         }
       }
     }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }

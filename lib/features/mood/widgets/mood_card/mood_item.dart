@@ -7,24 +7,23 @@ import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/features/mood/widgets/mood_card/show_reg_dialog.dart';
 import 'package:murmur/core/widgets/saved_dialog.dart';
-import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
-class MoodItem extends StatelessWidget {
+class MoodItem extends ConsumerWidget {
   final AppUser appUser;
   final Emotion emotion;
   final bool isSelected;
-  final GlobalKey<WellnessCardState> wellnessCardKey;
 
   const MoodItem({
     super.key,
     required this.appUser,
     required this.emotion,
     required this.isSelected,
-    required this.wellnessCardKey,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -36,7 +35,7 @@ class MoodItem extends StatelessWidget {
               context: context,
               appUser: appUser,
               emotion: emotion,
-              wellnessCardKey: wellnessCardKey,
+              ref: ref,
               selectedTriggers: [],
               dateTime: DateTime.now(),
             );
@@ -46,7 +45,7 @@ class MoodItem extends StatelessWidget {
             }
           }
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,

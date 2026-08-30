@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:murmur/features/auth/auth_service.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
@@ -5,6 +6,7 @@ import 'package:murmur/features/auth/screens/login_screen.dart';
 import 'package:murmur/features/auth/screens/signup_screen.dart';
 import 'package:murmur/features/auth/screens/terms_screen.dart';
 import 'package:murmur/core/widgets/loading_dialog.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -41,16 +43,16 @@ class _StartScreenState extends State<StartScreen> {
   }) {
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.md),
       child: Ink(
         decoration: BoxDecoration(
           gradient: gradient,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Container(
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainer.withAlpha(55),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           width: double.infinity,
@@ -150,7 +152,7 @@ class _StartScreenState extends State<StartScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                   child: const Image(
                     height: 140,
                     width: 140,
@@ -165,16 +167,20 @@ class _StartScreenState extends State<StartScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Login with Apple
-                buildGradientButton(
-                  text: 'Log In with Apple',
-                  imagePath: 'assets/logo/apple_icon.png',
-                  onPressed: () {
-                    FirebaseService.logEvent('startscreen_login_apple_pressed');
-                    _handleAppleSignIn();
-                  },
-                ),
-                const SizedBox(height: 16),
+                // Вход через Apple — только на iOS. На Android нативный
+                // диалог недоступен, кнопка молча ничего не делала.
+                if (Platform.isIOS) ...[
+                  buildGradientButton(
+                    text: 'Log In with Apple',
+                    imagePath: 'assets/logo/apple_icon.png',
+                    onPressed: () {
+                      FirebaseService.logEvent(
+                          'startscreen_login_apple_pressed');
+                      _handleAppleSignIn();
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
 
                 // Login with Google
                 buildGradientButton(
@@ -241,7 +247,7 @@ class _StartScreenState extends State<StartScreen> {
                   child: Text(
                     'Terms and Conditions',
                     style: TextStyle(
-                      color: Colors.blue,
+                      color: Theme.of(context).colorScheme.primary,
                       fontSize:
                           Theme.of(context).textTheme.labelLarge!.fontSize,
                       fontWeight:

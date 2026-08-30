@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
-import 'package:murmur/main.dart';
+import 'package:murmur/app/providers.dart';
 import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/mood/models/mood_record.dart';
 import 'package:murmur/features/mood/widgets/analysis/mood_chart.dart';
 import 'package:murmur/features/mood/widgets/analysis/mood_curve_day.dart';
 import 'package:murmur/features/mood/widgets/analysis/mood_record_card.dart';
 import 'package:murmur/core/widgets/saved_dialog.dart';
-import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class AnalysisScreen extends ConsumerStatefulWidget {
-  final GlobalKey<WellnessCardState> wellnessCardKey;
-  const AnalysisScreen({super.key, required this.wellnessCardKey});
+  const AnalysisScreen({super.key});
 
   @override
   ConsumerState<AnalysisScreen> createState() => _AnalysisScreenState();
@@ -53,7 +52,20 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     }
 
     final firebaseService = FirebaseService();
-    records = await firebaseService.fetchMoodRecords(appUser!.id);
+    try {
+      records = await firebaseService.fetchMoodRecords(appUser!.id);
+    } catch (e) {
+      debugPrint('Analysis load failed: $e');
+      if (mounted) {
+        setState(() => isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('Could not load your records. Check your connection.')),
+        );
+      }
+      return;
+    }
 
     selectedDate = null;
     dayRecords = records;
@@ -121,7 +133,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 padding: const EdgeInsets.all(24.0),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceDim,
-                  borderRadius: BorderRadius.circular(12.0),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -202,8 +214,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                                               child: MoodRecordCard(
                                                 record: record,
                                                 appUser: appUser!,
-                                                wellnessCardKey:
-                                                    widget.wellnessCardKey,
                                                 update: (bool saved) {
                                                   showSuccessOverlay(context,
                                                       isDeleted: !saved);
@@ -219,8 +229,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                                           child: MoodRecordCard(
                                             record: record,
                                             appUser: appUser!,
-                                            wellnessCardKey:
-                                                widget.wellnessCardKey,
                                             update: (bool saved) {
                                               showSuccessOverlay(context,
                                                   isDeleted: !saved);
@@ -254,16 +262,20 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                                           ?.copyWith(
                                             fontSize: 30,
                                             fontWeight: FontWeight.w500,
-                                            color: Colors.grey,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
                                           ),
                                       textScaler: TextScaler.linear(1.0),
                                     ),
                                     const SizedBox(
                                       width: 6,
                                     ),
-                                    const Icon(
+                                    Icon(
                                       Icons.cloud_off,
-                                      color: Colors.grey,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
                                       size: 38,
                                     )
                                   ],
@@ -275,7 +287,9 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                                       .titleLarge
                                       ?.copyWith(
                                         fontSize: 20,
-                                        color: Colors.grey,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 2,

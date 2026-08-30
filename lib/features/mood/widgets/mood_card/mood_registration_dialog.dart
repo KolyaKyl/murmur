@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/features/mood/widgets/mood_card/level_card.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class MoodRegistrationDialog extends StatefulWidget {
   final Emotion emotion;
@@ -77,19 +78,19 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
             prefixText: '#',
             hintText: 'work, family etc.',
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
               borderSide: BorderSide(
                 color: Theme.of(context).colorScheme.outline,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
               borderSide: BorderSide(
                 color: Theme.of(context).colorScheme.outline,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
               borderSide: BorderSide(
                 color: Theme.of(context).colorScheme.outline,
               ),
@@ -106,17 +107,17 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
             },
             style: FilledButton.styleFrom(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              foregroundColor: Colors.red,
+              foregroundColor: Theme.of(context).colorScheme.error,
               backgroundColor: Colors.transparent,
             ),
             child: Text(
               'Cancel',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontSize: 18,
-                    color: Colors.red,
+                    color: Theme.of(context).colorScheme.error,
                   ),
             ),
           ),
@@ -129,7 +130,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
             },
             style: FilledButton.styleFrom(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -173,7 +174,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.xl),
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -262,7 +263,8 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                                               .outline,
                                           width: 1.0,
                                         ),
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius:
+                                            BorderRadius.circular(AppRadius.sm),
                                       ),
                                     ),
                                   ),
@@ -304,19 +306,22 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                             decoration: InputDecoration(
                               hintText: 'Add optional note...',
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.md),
                                 borderSide: BorderSide(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.md),
                                 borderSide: BorderSide(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.md),
                                 borderSide: BorderSide(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
@@ -349,11 +354,12 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                           },
                           style: FilledButton.styleFrom(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                             ),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
-                            foregroundColor: Colors.red,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.error,
                             backgroundColor: Colors.transparent,
                           ),
                           child: Text(
@@ -363,7 +369,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                                 .titleLarge
                                 ?.copyWith(
                                   fontSize: 18,
-                                  color: Colors.red,
+                                  color: Theme.of(context).colorScheme.error,
                                 ),
                           ),
                         ),
@@ -380,7 +386,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                           },
                           style: FilledButton.styleFrom(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                             ),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),

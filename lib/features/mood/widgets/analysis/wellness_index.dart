@@ -1,44 +1,25 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:murmur/app/providers.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/features/mood/screens/analysis_screen.dart';
 
-class WellnessCard extends StatefulWidget {
-  final int moodIndex;
-
-  const WellnessCard({
-    super.key,
-    required this.moodIndex,
-  });
+class WellnessCard extends ConsumerStatefulWidget {
+  const WellnessCard({super.key});
 
   @override
-  State<WellnessCard> createState() => WellnessCardState();
+  ConsumerState<WellnessCard> createState() => _WellnessCardState();
 }
 
-class WellnessCardState extends State<WellnessCard>
+class _WellnessCardState extends ConsumerState<WellnessCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late Animation<Color?> _color1;
   late Animation<Color?> _color2;
-
-  int _wellnessIndex = 0;
-  String _wellnessLabel = 'Loading...';
-  String _welnessSuggestion = '';
-  Icon _wellnessIcon = Icon(
-    Icons.cloud_off,
-    color: Colors.grey,
-  );
-
-  void updateWellnessIndex(int index) {
-    setState(() {
-      _wellnessIndex = index;
-      _wellnessLabel = _getLabelForIndex(index);
-      _welnessSuggestion = _getSuggestion(index);
-      _wellnessIcon = _getIconForIndex(index);
-    });
-  }
 
   String _getLabelForIndex(int index) {
     if (index == 0) return 'No data';
@@ -59,50 +40,25 @@ class WellnessCardState extends State<WellnessCard>
   }
 
   Icon _getIconForIndex(int index) {
+    final status = Theme.of(context).moodStatus;
     if (index == 0) {
-      return const Icon(
-        Icons.cloud_off,
-        color: Colors.grey,
-        size: 38,
-      );
+      return Icon(Icons.cloud_off, color: status.empty, size: 38);
     } else if (index >= 80) {
-      return const Icon(
-        Icons.rocket_launch,
-        color: Colors.deepPurple,
-        size: 38,
-      );
+      return Icon(Icons.rocket_launch, color: status.peak, size: 38);
     } else if (index >= 60) {
-      return const Icon(
-        Icons.trending_up,
-        color: Colors.green,
-        size: 38,
-      );
+      return Icon(Icons.trending_up, color: status.high, size: 38);
     } else if (index >= 40) {
-      return const Icon(
-        Icons.show_chart,
-        color: Colors.yellow,
-        size: 38,
-      );
+      return Icon(Icons.show_chart, color: status.average, size: 38);
     } else if (index >= 20) {
-      return const Icon(
-        Icons.trending_down,
-        color: Colors.orange,
-        size: 38,
-      );
+      return Icon(Icons.trending_down, color: status.low, size: 38);
     } else {
-      return const Icon(
-        Icons.battery_1_bar,
-        color: Colors.red,
-        size: 38,
-      );
+      return Icon(Icons.battery_1_bar, color: status.bottom, size: 38);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _wellnessIndex = widget.moodIndex;
-    updateWellnessIndex(_wellnessIndex);
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -136,11 +92,15 @@ class WellnessCardState extends State<WellnessCard>
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final index = ref.watch(moodIndexProvider);
+    final label = _getLabelForIndex(index);
+    final suggestion = _getSuggestion(index);
+    final icon = _getIconForIndex(index);
 
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Container(
         height: max(
@@ -148,7 +108,7 @@ class WellnessCardState extends State<WellnessCard>
         width: double.infinity,
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: AnimatedBuilder(
           animation: _controller,
@@ -163,21 +123,18 @@ class WellnessCardState extends State<WellnessCard>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                   onTap: () {
                     HapticFeedback.selectionClick();
                     FirebaseService.logEvent('wellnessindexcard_pressed');
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => AnalysisScreen(
-                          wellnessCardKey:
-                              widget.key as GlobalKey<WellnessCardState>,
-                        ),
+                        builder: (context) => const AnalysisScreen(),
                       ),
                     );
                   },
@@ -185,7 +142,7 @@ class WellnessCardState extends State<WellnessCard>
                     padding: const EdgeInsets.fromLTRB(20, 2, 20, 4),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainer.withAlpha(55),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,7 +151,8 @@ class WellnessCardState extends State<WellnessCard>
                           ' ',
                           style: textTheme.labelMedium?.copyWith(
                             // fontWeight: FontWeight.bold,
-                            color: Colors.grey,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                           overflow: TextOverflow.ellipsis,
                           textScaler: TextScaler.linear(1.0),
@@ -205,12 +163,14 @@ class WellnessCardState extends State<WellnessCard>
                             ConstrainedBox(
                               constraints: BoxConstraints(maxWidth: 150),
                               child: Text(
-                                '$_wellnessIndex',
+                                '$index',
                                 style: textTheme.displayLarge?.copyWith(
                                     fontSize: 70,
                                     fontWeight: FontWeight.bold,
-                                    color: _wellnessIndex == 0
-                                        ? Colors.grey
+                                    color: index == 0
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant
                                         : colorScheme.onSurface),
                                 textScaler: TextScaler.linear(1.0),
                               ),
@@ -230,12 +190,14 @@ class WellnessCardState extends State<WellnessCard>
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        _wellnessLabel,
+                                        label,
                                         style: textTheme.titleLarge?.copyWith(
                                             fontSize: 28,
                                             fontWeight: FontWeight.w500,
-                                            color: _wellnessIndex == 0
-                                                ? Colors.grey
+                                            color: index == 0
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant
                                                 : colorScheme.onSurface),
                                         overflow: TextOverflow.ellipsis,
                                         textScaler: TextScaler.linear(1.0),
@@ -243,15 +205,17 @@ class WellnessCardState extends State<WellnessCard>
                                       const SizedBox(
                                         width: 6,
                                       ),
-                                      _wellnessIcon,
+                                      icon,
                                     ],
                                   ),
                                   Text(
-                                    _welnessSuggestion,
+                                    suggestion,
                                     style: textTheme.titleLarge?.copyWith(
                                         fontSize: 18,
-                                        color: _wellnessIndex == 0
-                                            ? Colors.grey
+                                        color: index == 0
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant
                                             : colorScheme.onSurface),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
@@ -269,7 +233,9 @@ class WellnessCardState extends State<WellnessCard>
                             'Calculated as the average of the last 7 days',
                             style: textTheme.labelMedium?.copyWith(
                               // fontWeight: FontWeight.bold,
-                              color: Colors.grey,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                             overflow: TextOverflow.ellipsis,
                             textScaler: TextScaler.linear(1.0),

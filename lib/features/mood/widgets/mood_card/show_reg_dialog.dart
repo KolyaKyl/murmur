@@ -3,13 +3,14 @@ import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/features/mood/widgets/mood_card/mood_registration_dialog.dart';
-import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:murmur/app/providers.dart';
 
 Future<bool> showMoodRegistrationDialog({
   required BuildContext context,
   required AppUser appUser,
   required Emotion emotion,
-  required GlobalKey<WellnessCardState> wellnessCardKey,
+  required WidgetRef ref,
   required List<String> selectedTriggers,
   int level = 1,
   String recordId = '',
@@ -68,7 +69,7 @@ Future<bool> showMoodRegistrationDialog({
         ...all.where((trigger) => !selected.contains(trigger)),
       ];
 
-      await FirebaseService().saveMoodRecord(
+      final newIndex = await FirebaseService().saveMoodRecord(
         userId: appUser.id,
         emotion: emotion,
         recordId: recordId,
@@ -76,9 +77,9 @@ Future<bool> showMoodRegistrationDialog({
         selectedTriggers: selected,
         userTriggers: sortedTriggers,
         note: result['note'],
-        wellnessCardKey: wellnessCardKey,
         dateTime: dateTime,
       );
+      ref.read(moodIndexProvider.notifier).state = newIndex;
       return true;
     } catch (e) {
       debugPrint('Error saving mood: $e');

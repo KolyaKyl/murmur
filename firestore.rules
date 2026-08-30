@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Справочник эмоций. Наполняется вручную через консоль,
+    // клиент только читает и только будучи залогиненным.
+    match /emotions/{emotionId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Профиль и всё, что под ним, — только своему владельцу.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /MoodRecords/{recordId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Всё, что не описано выше, запрещено.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

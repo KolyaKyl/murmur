@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 void showSuccessOverlay(BuildContext context, {bool isDeleted = false}) {
   final overlay = Overlay.of(context);
@@ -57,7 +58,7 @@ class _DoubleCheckIconState extends State<_DoubleCheckIcon>
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceDim,
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           boxShadow: [
             BoxShadow(
                 color: Theme.of(context).colorScheme.surfaceBright,
@@ -69,9 +70,9 @@ class _DoubleCheckIconState extends State<_DoubleCheckIcon>
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.delete_forever,
-                    color: Colors.red,
+                    color: Theme.of(context).colorScheme.error,
                     size: 40,
                   ),
                   const SizedBox(width: 12),
@@ -87,9 +88,9 @@ class _DoubleCheckIconState extends State<_DoubleCheckIcon>
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.done_all,
-                    color: Colors.green,
+                    color: Theme.of(context).moodStatus.high,
                     size: 40,
                   ),
                   const SizedBox(width: 12),

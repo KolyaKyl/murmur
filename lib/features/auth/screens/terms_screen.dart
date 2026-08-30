@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class TermsScreen extends StatefulWidget {
   const TermsScreen({super.key});
@@ -30,7 +31,7 @@ class _TermsScreenState extends State<TermsScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onPrimaryContainer,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
       child: Column(
@@ -64,7 +65,7 @@ class _TermsScreenState extends State<TermsScreen> {
                             Theme.of(context).textTheme.labelLarge!.fontSize,
                         fontWeight:
                             Theme.of(context).textTheme.labelLarge!.fontWeight,
-                        color: Colors.blue),
+                        color: Theme.of(context).colorScheme.primary),
                   ),
                 ),
                 IconButton(

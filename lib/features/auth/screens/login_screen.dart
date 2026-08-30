@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:murmur/features/auth/auth_service.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/core/widgets/loading_dialog.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,19 +33,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return InputDecoration(
       hintText: hint,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide(
           color: colorScheme.outline,
         ),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide(
           color: colorScheme.outline,
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide(
           color: colorScheme.outline,
         ),
@@ -80,16 +81,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.md),
       child: Ink(
         decoration: BoxDecoration(
           gradient: gradient,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Container(
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainer.withAlpha(55),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           width: double.infinity,
@@ -198,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     child: const Image(
                       height: 100,
                       width: 100,

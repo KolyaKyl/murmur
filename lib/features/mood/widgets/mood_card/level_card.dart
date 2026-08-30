@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class LevelCard extends StatefulWidget {
   final num initialLevel;
@@ -58,7 +59,7 @@ class _LevelCardState extends State<LevelCard>
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
@@ -112,7 +113,7 @@ class _LevelCardState extends State<LevelCard>
             Material(
               color: Colors.transparent,
               child: InkWell(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
                 onTap: () {
                   HapticFeedback.mediumImpact();
                   setState(() {
@@ -124,7 +125,7 @@ class _LevelCardState extends State<LevelCard>
                   padding: const EdgeInsets.fromLTRB(25, 16, 25, 12),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainer.withAlpha(55),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -192,7 +193,7 @@ class _LevelCardState extends State<LevelCard>
                       Text(
                         'Swipe or tap to adjust',
                         style: textTheme.labelMedium?.copyWith(
-                          color: Colors.grey,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],

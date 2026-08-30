@@ -1,45 +1,51 @@
 {
   "project_info": {
-    "project_number": "299353196169",
-    "project_id": "self-screen-1de5f",
-    "storage_bucket": "self-screen-1de5f.firebasestorage.app"
+    "project_number": "86292750316",
+    "project_id": "murmur-2916d",
+    "storage_bucket": "murmur-2916d.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:299353196169:android:c3a515799e97ad8b172858",
+        "mobilesdk_app_id": "1:86292750316:android:129ec7aed8ec8115a3eac9",
         "android_client_info": {
-          "package_name": "app.f_one.selfscreen"
+          "package_name": "app.fone.murmur"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "86292750316-33r03glu9u32k6ka2c4achkdb3durvmk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.fone.murmur",
+            "certificate_hash": "89d619c24e6e2c35e8e7e614a516aa9e4f3eeefb"
+          }
+        },
+        {
+          "client_id": "86292750316-7nmo4b2314qgpckr5nilb3dmutpv3bbj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBuo45fdGIJaxdGhRAmbgNaf-jJ8As1ypI"
+          "current_key": "AIzaSyBo6_7yKHYjgEgEdOqdQjyVrTaJHeWB5CE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:299353196169:android:92cfd5b04e7737b4172858",
-        "android_client_info": {
-          "package_name": "app.fone.self_screen"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBuo45fdGIJaxdGhRAmbgNaf-jJ8As1ypI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "86292750316-7nmo4b2314qgpckr5nilb3dmutpv3bbj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "86292750316-25oou270ocuhe9tat80ov6vc4t9hcqor.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.f-one.murmur"
+              }
+            }
+          ]
         }
       }
     }

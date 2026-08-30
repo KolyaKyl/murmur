@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/features/auth/auth_service.dart';
 import 'package:murmur/core/widgets/loading_dialog.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -37,19 +39,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return InputDecoration(
       hintText: hint,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide(
           color: colorScheme.outline,
         ),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide(
           color: colorScheme.outline,
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide(
           color: colorScheme.outline,
         ),
@@ -194,16 +196,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.md),
       child: Ink(
         decoration: BoxDecoration(
           gradient: gradient,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Container(
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainer.withAlpha(55),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           width: buttonSize,
@@ -282,7 +284,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     child: const Image(
                       height: 100,
                       width: 100,
@@ -369,18 +371,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Apple Button
-                      buildGradientButton(
-                        text: 'Log In with Apple',
-                        imagePath: 'assets/logo/apple_icon.png',
-                        square: true,
-                        onPressed: () {
-                          FirebaseService.logEvent(
-                              'signupscreen_login_apple_pressed');
-                          _handleAppleSignIn();
-                        },
-                      ),
-                      const SizedBox(width: 16),
+                      // Вход через Apple — только на iOS, см. start_screen.
+                      if (Platform.isIOS) ...[
+                        buildGradientButton(
+                          text: 'Log In with Apple',
+                          imagePath: 'assets/logo/apple_icon.png',
+                          square: true,
+                          onPressed: () {
+                            FirebaseService.logEvent(
+                                'signupscreen_login_apple_pressed');
+                            _handleAppleSignIn();
+                          },
+                        ),
+                        const SizedBox(width: 16),
+                      ],
                       buildGradientButton(
                         text: 'Log In with Google',
                         imagePath: 'assets/logo/google_icon.png',

@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class DailyMoodChart extends StatefulWidget {
   final Map<DateTime, num> indexes;
@@ -82,7 +83,8 @@ class _DailyMoodChartState extends State<DailyMoodChart> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg)),
       clipBehavior: Clip.antiAlias,
       child: Container(
         height: 270,
@@ -96,10 +98,8 @@ class _DailyMoodChartState extends State<DailyMoodChart> {
                 padding: const EdgeInsets.only(left: 8.0, bottom: 0.0),
                 child: Text(
                   'Mood index (Daily)',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium
-                      ?.copyWith(color: Colors.grey),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
               Expanded(
@@ -226,7 +226,8 @@ class _DailyMoodChartState extends State<DailyMoodChart> {
                               BarChartRodData(
                                 fromY: 0,
                                 toY: value.toDouble(),
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.sm),
                                 gradient: isSelected
                                     ? LinearGradient(
                                         colors: [

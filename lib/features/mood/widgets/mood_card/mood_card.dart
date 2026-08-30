@@ -5,17 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/features/mood/widgets/mood_card/mood_item.dart';
-import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class MoodCard extends StatefulWidget {
   final List<Emotion> emotions;
   final AppUser appUser;
-  final GlobalKey<WellnessCardState> wellnessCardKey;
-  const MoodCard(
-      {super.key,
-      required this.emotions,
-      required this.appUser,
-      required this.wellnessCardKey});
+  const MoodCard({super.key, required this.emotions, required this.appUser});
 
   @override
   State<MoodCard> createState() => MoodCardState();
@@ -60,13 +55,13 @@ class MoodCardState extends State<MoodCard> {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: SizedBox(
           height: max(
@@ -98,7 +93,6 @@ class MoodCardState extends State<MoodCard> {
                       emotion: emotion,
                       isSelected: index == _currentIndex,
                       appUser: widget.appUser,
-                      wellnessCardKey: widget.wellnessCardKey,
                     );
                   }),
                 ),
@@ -114,7 +108,7 @@ class MoodCardState extends State<MoodCard> {
                 left: 30,
                 right: 30,
                 child: Divider(
-                  color: Colors.grey.shade400,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   thickness: 3,
                   height: 1,
                 ),
@@ -130,7 +124,7 @@ class MoodCardState extends State<MoodCard> {
                 left: 30,
                 right: 30,
                 child: Divider(
-                  color: Colors.grey.shade400,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   thickness: 3,
                   height: 1,
                 ),

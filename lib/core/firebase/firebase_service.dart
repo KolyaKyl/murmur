@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/features/mood/models/mood_record.dart';
-import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
 
 class FirebaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -26,20 +25,21 @@ class FirebaseService {
 
       return emotions;
     } catch (e) {
-      // print('Error fetching emotions: $e');
-      return [];
+      debugPrint('fetchEmotions failed: $e');
+      rethrow;
     }
   }
 
 //mood records
-  Future<void> saveMoodRecord({
+  /// Возвращает пересчитанный индекс за 7 дней — вызывающий кладёт его
+  /// в moodIndexProvider.
+  Future<int> saveMoodRecord({
     required String userId,
     required Emotion emotion,
     required num level,
     required List<String> selectedTriggers,
     required List<String> userTriggers,
     required String? note,
-    required GlobalKey<WellnessCardState> wellnessCardKey,
     required String recordId,
     required DateTime dateTime,
   }) async {
@@ -84,14 +84,13 @@ class FirebaseService {
       'triggers': userTriggers,
     }, SetOptions(merge: true));
 
-    final newIndex = await calculate7DayWellnessIndex(userId);
-    wellnessCardKey.currentState?.updateWellnessIndex(newIndex);
+    return calculate7DayWellnessIndex(userId);
   }
 
-  Future<bool> deleteMoodRecord(
+  /// null — удалить не удалось. Иначе пересчитанный индекс за 7 дней.
+  Future<int?> deleteMoodRecord(
     String userId,
     String recordId,
-    GlobalKey<WellnessCardState> wellnessCardKey,
   ) async {
     try {
       await _firestore
@@ -106,12 +105,10 @@ class FirebaseService {
           return true;
         }
       });
-      final newIndex = await calculate7DayWellnessIndex(userId);
-      wellnessCardKey.currentState?.updateWellnessIndex(newIndex);
-      return true;
+      return await calculate7DayWellnessIndex(userId);
     } catch (e) {
-      ('Error deleting mood rec: $e');
-      return false;
+      debugPrint('deleteMoodRecord failed: $e');
+      return null;
     }
   }
 
@@ -130,8 +127,8 @@ class FirebaseService {
 
       return moodRecords;
     } catch (e) {
-      e.toString();
-      return [];
+      debugPrint('fetchMoodRecords failed: $e');
+      rethrow;
     }
   }
 
@@ -185,11 +182,7 @@ class FirebaseService {
       'isDarkTheme': isDarkTheme,
     };
 
-    try {
-      await userDoc.set(userData, SetOptions(merge: true));
-    } catch (e) {
-      rethrow;
-    }
+    await userDoc.set(userData, SetOptions(merge: true));
   }
 
   // Получение данных пользователя
@@ -199,13 +192,12 @@ class FirebaseService {
 
     try {
       final doc = await _firestore.collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        return AppUser.fromDoc(doc);
-      } else {
-        return null;
-      }
+      // null здесь означает только «документа ещё нет» — это штатный случай
+      // для только что зарегистрированного пользователя. Ошибки летят наверх.
+      return doc.exists ? AppUser.fromDoc(doc) : null;
     } catch (e) {
-      return null;
+      debugPrint('getAppUserData failed: $e');
+      rethrow;
     }
   }
 
@@ -219,19 +211,15 @@ class FirebaseService {
       final url = await ref.getDownloadURL();
       return url;
     } catch (e) {
-      debugPrint('Error uploading profile photo: $e');
-      return '';
+      debugPrint('uploadUserProfilePhoto failed: $e');
+      return null;
     }
   }
 
   // Обновление профиля (name, gender, birthDate и т.д.)
   Future<void> updateUserProfile(AppUser user) async {
     final userDoc = _firestore.collection('users').doc(user.id);
-    try {
-      await userDoc.update(user.toMap());
-    } catch (e) {
-      rethrow;
-    }
+    await userDoc.update(user.toMap());
   }
 
   // Отдельное обновление темы
@@ -239,13 +227,9 @@ class FirebaseService {
     final user = _auth.currentUser;
     if (user == null) return;
 
-    try {
-      await _firestore.collection('users').doc(user.uid).update({
-        'isDarkTheme': isDark,
-      });
-    } catch (e) {
-      rethrow;
-    }
+    await _firestore.collection('users').doc(user.uid).update({
+      'isDarkTheme': isDark,
+    });
   }
 
   // Удаляем документ пользователя и две подколлекции

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 void showLoadingDialog(BuildContext context) {
   showDialog(
@@ -13,7 +14,7 @@ void showLoadingDialog(BuildContext context) {
             padding: const EdgeInsets.all(24.0),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceDim,
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,

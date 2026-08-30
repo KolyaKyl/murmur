@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/features/auth/auth_service.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
-import 'package:murmur/main.dart';
+import 'package:murmur/app/providers.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/features/auth/screens/auth_gate.dart';
 import 'package:murmur/features/mood/widgets/mood_card/mood_card.dart';
 import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,10 +18,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool isLoading = true;
+  String? loadError;
 
   final GlobalKey<MoodCardState> _moodCardKey = GlobalKey<MoodCardState>();
-  final GlobalKey<WellnessCardState> _wellnessCardKey =
-      GlobalKey<WellnessCardState>();
 
   List<Emotion> emotions = [];
   int moodIndex = 0;
@@ -37,13 +37,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (appUser == null) return;
 
-    emotions = await firebaseService.fetchEmotions();
-    moodIndex = await firebaseService.calculate7DayWellnessIndex(appUser.id);
-
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
+    try {
+      emotions = await firebaseService.fetchEmotions();
+      moodIndex = await firebaseService.calculate7DayWellnessIndex(appUser.id);
+      ref.read(moodIndexProvider.notifier).state = moodIndex;
+      if (mounted) {
+        setState(() {
+          loadError = null;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Home load failed: $e');
+      if (mounted) {
+        setState(() {
+          loadError = 'Could not load your data. Check your connection.';
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -77,84 +88,107 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     return Scaffold(
-      body: isLoading
+      body: loadError != null
           ? Center(
-              child: Container(
+              child: Padding(
                 padding: const EdgeInsets.all(24.0),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceDim,
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(),
+                    Icon(Icons.cloud_off,
+                        size: 48,
+                        color: Theme.of(context).colorScheme.onSurface),
                     const SizedBox(height: 16),
                     Text(
-                      'Loading...',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                      loadError!,
+                      textAlign: TextAlign.center,
+                      style: textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () {
+                        setState(() => isLoading = true);
+                        _loadMoodData();
+                      },
+                      child: const Text('Try again'),
                     ),
                   ],
                 ),
               ),
             )
-          : RefreshIndicator(
-              edgeOffset: kToolbarHeight + 20,
-              onRefresh: () async {
-                await _loadMoodData();
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _moodCardKey.currentState?.scrollToDefault();
-                  _wellnessCardKey.currentState?.updateWellnessIndex(moodIndex);
-                });
-              },
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverAppBar(
-                    scrolledUnderElevation: 0,
-                    pinned: false,
-                    floating: true,
-                    snap: true,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    elevation: 0,
-                    title: const Text('Murmur'),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Mood index', style: textTheme.bodyLarge),
-                          WellnessCard(
-                            key: _wellnessCardKey,
-                            moodIndex: moodIndex,
+          : isLoading
+              ? Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(24.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceDim,
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Loading...',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
                           ),
-                          SizedBox(
-                              height:
-                                  MediaQuery.of(context).size.height * 0.01),
-                          Text('What do you feel now?',
-                              style: textTheme.bodyLarge),
-                          MoodCard(
-                            emotions: emotions,
-                            appUser: appUser,
-                            key: _moodCardKey,
-                            wellnessCardKey: _wellnessCardKey,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  SliverToBoxAdapter(
-                    child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.01),
+                )
+              : RefreshIndicator(
+                  edgeOffset: kToolbarHeight + 20,
+                  onRefresh: () async {
+                    await _loadMoodData();
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _moodCardKey.currentState?.scrollToDefault();
+                    });
+                  },
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverAppBar(
+                        scrolledUnderElevation: 0,
+                        pinned: false,
+                        floating: true,
+                        snap: true,
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        elevation: 0,
+                        title: const Text('Murmur'),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Mood index', style: textTheme.bodyLarge),
+                              const WellnessCard(),
+                              SizedBox(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.01),
+                              Text('What do you feel now?',
+                                  style: textTheme.bodyLarge),
+                              MoodCard(
+                                emotions: emotions,
+                                appUser: appUser,
+                                key: _moodCardKey,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.01),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
     );
   }
 }

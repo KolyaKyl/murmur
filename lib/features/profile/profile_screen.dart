@@ -7,18 +7,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:murmur/features/auth/auth_service.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
-import 'package:murmur/main.dart';
+import 'package:murmur/app/providers.dart';
 import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/mood/screens/analysis_screen.dart';
 import 'package:murmur/features/auth/screens/auth_gate.dart';
-import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
+import 'package:murmur/core/theme/app_theme.dart';
 
 /// Заготовка таба «Профиль». Содержимое перенесено из удалённого AppDrawer
 /// как есть, кроме психологических тестов. На экран пока никто не ведёт —
-/// он подключается на шаге 4 (навигация), там же уходит wellnessCardKey.
+/// он подключается на шаге 4 (навигация).
 class ProfileScreen extends ConsumerStatefulWidget {
-  final GlobalKey<WellnessCardState> wellnessCardKey;
-  const ProfileScreen({super.key, required this.wellnessCardKey});
+  const ProfileScreen({super.key});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -29,6 +28,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isUploading = false;
 
   Future<void> _pickAndUploadProfilePhoto(AppUser user) async {
+    final scheme = Theme.of(context).colorScheme;
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked == null) return;
@@ -38,8 +38,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Crop Photo',
-          toolbarColor: Colors.white,
-          toolbarWidgetColor: Colors.black,
+          toolbarColor: scheme.surface,
+          toolbarWidgetColor: scheme.onSurface,
           lockAspectRatio: true,
           cropStyle: CropStyle.circle,
         ),
@@ -68,9 +68,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       final updatedUser = user.copyWith(photoUrl: photoUrl);
       await firebaseService.updateUserProfile(updatedUser);
       ref.read(appUserProvider.notifier).state = updatedUser;
+    } else if (mounted) {
+      setState(() => _avatarImage = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not upload the photo. Try again.')),
+      );
     }
 
-    setState(() => _isUploading = false);
+    if (mounted) setState(() => _isUploading = false);
   }
 
   Widget _buildProfileImage(AppUser? user) {
@@ -123,19 +128,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
                           borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.outline,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
                           borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.outline,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
                           borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.outline,
                           ),
@@ -151,7 +156,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       decoration: InputDecoration(
                         labelText: 'Gender',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
                           borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.outline,
                           ),
@@ -181,7 +186,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       decoration: InputDecoration(
                         labelText: 'Birth Date',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
                           borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.outline,
                           ),
@@ -224,18 +229,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 },
                 style: FilledButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  foregroundColor: Colors.red,
+                  foregroundColor: Theme.of(context).colorScheme.error,
                   backgroundColor: Colors.transparent,
                 ),
                 child: Text(
                   'Cancel',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontSize: 18,
-                        color: Colors.red,
+                        color: Theme.of(context).colorScheme.error,
                       ),
                 ),
               ),
@@ -255,7 +260,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 },
                 style: FilledButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -299,18 +304,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   onPressed: () => Navigator.pop(ctx),
                   style: FilledButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    foregroundColor: Colors.red,
+                    foregroundColor: Theme.of(context).colorScheme.error,
                     backgroundColor: Colors.transparent,
                   ),
                   child: Text(
                     'Cancel',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontSize: 18,
-                          color: Colors.red,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                   ),
                 ),
@@ -330,7 +335,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   },
                   style: FilledButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -444,18 +449,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      DateFormat('yyyy-MM-dd').format(
-                        user.birthDate!,
+                    if (user.birthDate != null)
+                      Text(
+                        DateFormat('yyyy-MM-dd').format(user.birthDate!),
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
                       ),
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                          ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                    ),
                     user.gender == 'Unknown'
                         ? SizedBox.shrink()
                         : Text(
@@ -482,8 +487,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onTap: () {
               FirebaseService.logEvent('profile_moodanal_pressed');
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    AnalysisScreen(wellnessCardKey: widget.wellnessCardKey),
+                builder: (context) => const AnalysisScreen(),
               ));
             },
           ),
@@ -502,7 +506,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 Switch(
                   value: isDarkTheme,
                   onChanged: (val) async {
-                    ref.read(themeProvider.notifier).state = val;
+                    await ref.read(themeProvider.notifier).setDark(val);
                     await firebaseService.updateUserThemePreference(val);
                   },
                 ),

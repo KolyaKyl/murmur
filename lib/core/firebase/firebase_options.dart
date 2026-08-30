@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'Murmur is an iOS and Android app.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -46,30 +49,24 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAh7Cx5FZdYDw3qwVtNROo4_6ZtYUEmBoY',
-    appId: '1:299353196169:web:c441e25eb5d90e6a172858',
-    messagingSenderId: '299353196169',
-    projectId: 'self-screen-1de5f',
-    authDomain: 'self-screen-1de5f.firebaseapp.com',
-    storageBucket: 'self-screen-1de5f.firebasestorage.app',
-    measurementId: 'G-K8GP1M7XWH',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBuo45fdGIJaxdGhRAmbgNaf-jJ8As1ypI',
-    appId: '1:299353196169:android:92cfd5b04e7737b4172858',
-    messagingSenderId: '299353196169',
-    projectId: 'self-screen-1de5f',
-    storageBucket: 'self-screen-1de5f.firebasestorage.app',
+    apiKey: 'AIzaSyBo6_7yKHYjgEgEdOqdQjyVrTaJHeWB5CE',
+    appId: '1:86292750316:android:129ec7aed8ec8115a3eac9',
+    messagingSenderId: '86292750316',
+    projectId: 'murmur-2916d',
+    storageBucket: 'murmur-2916d.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDglC4Rqa92IuLuEgIm5qT4kjq_MESyhVY',
-    appId: '1:299353196169:ios:a664eb503ddf4243172858',
-    messagingSenderId: '299353196169',
-    projectId: 'self-screen-1de5f',
-    storageBucket: 'self-screen-1de5f.firebasestorage.app',
-    iosBundleId: 'app.f-one.selfscreen',
+    apiKey: 'AIzaSyDb2JtRDDoMnFePfZSeKAtAfZK1RXFhzVg',
+    appId: '1:86292750316:ios:130aa8b29c23223ea3eac9',
+    messagingSenderId: '86292750316',
+    projectId: 'murmur-2916d',
+    storageBucket: 'murmur-2916d.firebasestorage.app',
+    androidClientId:
+        '86292750316-33r03glu9u32k6ka2c4achkdb3durvmk.apps.googleusercontent.com',
+    iosClientId:
+        '86292750316-25oou270ocuhe9tat80ov6vc4t9hcqor.apps.googleusercontent.com',
+    iosBundleId: 'app.f-one.murmur',
   );
 }

@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/core/models/app_user.dart';
@@ -125,9 +126,28 @@ class AuthService {
 
   static Future<void> deleteAccount() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await user.delete();
+    if (user == null) return;
+
+    // Apple требует отзывать токен при удалении аккаунта (App Store 5.1.1(v)),
+    // иначе приложение заворачивают на ревью. authorizationCode живёт минуты,
+    // поэтому берём свежий прямо сейчас, а не сохранённый при входе.
+    final signedInWithApple =
+        user.providerData.any((p) => p.providerId == 'apple.com');
+    if (signedInWithApple) {
+      try {
+        final appleCredential = await SignInWithApple.getAppleIDCredential(
+          scopes: [AppleIDAuthorizationScopes.email],
+        );
+        final code = appleCredential.authorizationCode;
+        await FirebaseAuth.instance.revokeTokenWithAuthorizationCode(code);
+      } catch (e) {
+        // Отзыв не удался — аккаунт всё равно удаляем, иначе пользователь
+        // застрянет в приложении, которое отказывается его отпускать.
+        debugPrint('Apple token revoke failed: $e');
+      }
     }
+
+    await user.delete();
   }
 
   static User? get currentUser => FirebaseAuth.instance.currentUser;

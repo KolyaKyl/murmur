@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
-import 'package:murmur/main.dart';
+import 'package:murmur/app/providers.dart';
 import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/home/home_screen.dart';
 import 'package:murmur/features/auth/screens/start_screen.dart';
@@ -33,11 +33,22 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     }
 
     final firebaseService = FirebaseService();
-    AppUser? appUser = await firebaseService.getAppUserData();
+    AppUser? appUser;
+    try {
+      appUser = await firebaseService.getAppUserData();
+    } catch (e) {
+      // Нет сети на старте — пускаем дальше с локальной темой,
+      // экран сам покажет своё состояние, вместо белого экрана навсегда.
+      debugPrint('AuthGate: could not load user: $e');
+    }
 
     if (appUser != null) {
       ref.read(appUserProvider.notifier).state = appUser;
-      ref.read(themeProvider.notifier).state = appUser.isDarkTheme ?? false;
+      // null означает "пользователь никогда не выбирал" — тогда остаётся
+      // локальное значение, а не насильно светлая тема.
+      if (appUser.isDarkTheme != null) {
+        await ref.read(themeProvider.notifier).setDark(appUser.isDarkTheme!);
+      }
     }
 
     setState(() => _isLoading = false);
