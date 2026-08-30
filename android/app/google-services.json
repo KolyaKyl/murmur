@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "299353196169",
+    "project_id": "self-screen-1de5f",
+    "storage_bucket": "self-screen-1de5f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299353196169:android:c3a515799e97ad8b172858",
+        "android_client_info": {
+          "package_name": "app.f_one.selfscreen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuo45fdGIJaxdGhRAmbgNaf-jJ8As1ypI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299353196169:android:92cfd5b04e7737b4172858",
+        "android_client_info": {
+          "package_name": "app.fone.self_screen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuo45fdGIJaxdGhRAmbgNaf-jJ8As1ypI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

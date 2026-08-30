@@ -1,0 +1,260 @@
+import 'package:flutter/material.dart';
+import 'package:self_screen/config/auth_services.dart';
+import 'package:self_screen/config/firebase_service.dart';
+import 'package:self_screen/screens/login/login_screen.dart';
+import 'package:self_screen/screens/login/signup_screen.dart';
+import 'package:self_screen/screens/login/terms_screen.dart';
+import 'package:self_screen/widgets/loading_dialog.dart';
+
+class StartScreen extends StatefulWidget {
+  const StartScreen({super.key});
+
+  @override
+  State<StartScreen> createState() => _StartScreenState();
+}
+
+class _StartScreenState extends State<StartScreen> {
+  late final ThemeData theme;
+  late final ColorScheme colorScheme;
+  late final LinearGradient gradient;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    theme = Theme.of(context);
+    colorScheme = theme.colorScheme;
+
+    gradient = LinearGradient(
+      colors: [
+        colorScheme.primary,
+        colorScheme.secondary,
+        colorScheme.onPrimaryFixed,
+      ],
+    );
+  }
+
+  Widget buildGradientButton({
+    required String text,
+    required VoidCallback onPressed,
+    IconData? icon,
+    String? imagePath,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(12),
+      child: Ink(
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainer.withAlpha(55),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          width: double.infinity,
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Icon(
+                    icon,
+                    color: Colors.black,
+                    size: 26,
+                  ),
+                ),
+              if (imagePath != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Image(
+                    height: 28,
+                    width: 28,
+                    image: AssetImage(imagePath),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              Flexible(
+                child: Text(
+                  text,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: icon != null ? TextAlign.start : TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    showLoadingDialog(context);
+    try {
+      bool success = await AuthService.signInWithGoogle();
+      if (!mounted) return;
+      Navigator.pop(context);
+      if (success) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (!mounted) return; // важно!
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Google sign-in failed')),
+      );
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    showLoadingDialog(context);
+    try {
+      bool success = await AuthService.signInWithApple();
+      if (!mounted) return;
+      Navigator.pop(context);
+      if (success) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Apple sign-in failed')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: const Image(
+                    height: 140,
+                    width: 140,
+                    image: AssetImage('assets/logo/logo_round.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Self Screen',
+                  style: theme.textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 24),
+
+                // Login with Apple
+                buildGradientButton(
+                  text: 'Log In with Apple',
+                  imagePath: 'assets/logo/apple_icon.png',
+                  onPressed: () {
+                    FirebaseService.logEvent('startscreen_login_apple_pressed');
+                    _handleAppleSignIn();
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Login with Google
+                buildGradientButton(
+                  text: 'Log In with Google',
+                  imagePath: 'assets/logo/google_icon.png',
+                  onPressed: () {
+                    FirebaseService.logEvent(
+                        'startscreen_login_google_pressed');
+                    _handleGoogleSignIn();
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Login with Email
+                buildGradientButton(
+                  text: 'Log In with Email',
+                  icon: Icons.email,
+                  onPressed: () {
+                    FirebaseService.logEvent('startscreen_login_email_pressed');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Sign Up
+                buildGradientButton(
+                  text: 'Sign Up',
+                  icon: Icons.person_add,
+                  onPressed: () {
+                    FirebaseService.logEvent('startscreen_signup_pressed');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignUpScreen()),
+                    );
+                  },
+                ),
+
+                const SizedBox(
+                  height: 24,
+                ),
+
+                //TC
+                Text(
+                  'by continuing, you agree to our',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(
+                  height: 6,
+                ),
+
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const TermsScreen()),
+                    );
+                  },
+                  child: Text(
+                    'Terms and Conditions',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize:
+                          Theme.of(context).textTheme.labelLarge!.fontSize,
+                      fontWeight:
+                          Theme.of(context).textTheme.labelLarge!.fontWeight,
+                    ),
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
