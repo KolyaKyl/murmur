@@ -7,7 +7,7 @@
         android:maxSdkVersion="28" />
 
     <application
-        android:label="Murmur"
+        android:label="MurMur"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 

@@ -19,6 +19,17 @@ service cloud.firestore {
       }
     }
 
+    // Каталог звуков и категорий. Наполняется вручную, клиент только читает.
+    match /sounds/{soundId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    match /soundCategories/{categoryId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
     // Всё, что не описано выше, запрещено.
     match /{document=**} {
       allow read, write: if false;

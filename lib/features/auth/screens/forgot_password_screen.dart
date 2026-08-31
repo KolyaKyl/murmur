@@ -140,7 +140,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Murmur', style: theme.textTheme.headlineMedium),
+                  Text('MurMur', style: theme.textTheme.headlineMedium),
                   const SizedBox(height: 32),
                   TextField(
                     controller: _emailController,

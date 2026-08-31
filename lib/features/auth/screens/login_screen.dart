@@ -208,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Murmur', style: theme.textTheme.headlineMedium),
+                  Text('MurMur', style: theme.textTheme.headlineMedium),
                   const SizedBox(height: 32),
 
                   // Email

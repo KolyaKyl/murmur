@@ -164,7 +164,7 @@ class _StartScreenState extends State<StartScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Murmur',
+                  'MurMur',
                   style: theme.textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 24),

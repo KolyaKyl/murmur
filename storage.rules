@@ -13,6 +13,18 @@ service firebase.storage {
                    && request.resource.contentType.matches('image/.*');
     }
 
+    // Каталог: аудио и обложки. Читают все авторизованные,
+    // пишем только мы — через консоль или CLI, они правила обходят.
+    match /sounds/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    match /covers/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

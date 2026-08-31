@@ -15,7 +15,7 @@ class MurmurApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(themeProvider);
     return MaterialApp(
-      title: 'Murmur',
+      title: 'MurMur',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

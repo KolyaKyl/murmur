@@ -160,7 +160,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         snap: true,
                         backgroundColor: Theme.of(context).colorScheme.surface,
                         elevation: 0,
-                        title: const Text('Murmur'),
+                        title: const Text('MurMur'),
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
