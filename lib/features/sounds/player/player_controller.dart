@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:murmur/app/providers.dart';
+import 'package:murmur/features/sounds/data/sound_cache.dart';
 import 'package:murmur/features/sounds/data/sounds_repository.dart';
 import 'package:murmur/features/sounds/models/sound.dart';
 import 'package:murmur/features/sounds/player/audio_handler.dart';
@@ -32,6 +33,9 @@ class MixState {
     this.sleepAt,
     this.mixName,
     this.loading = false,
+    this.failedAt,
+    this.failure,
+    this.loadingSoundId,
   });
 
   final List<MixLayer> layers;
@@ -39,6 +43,19 @@ class MixState {
   final DateTime? sleepAt;
   final String? mixName;
   final bool loading;
+
+  /// Метка последней неудачи. UI на неё смотрит и показывает сообщение —
+  /// иначе тап по дорожке, которую не удалось открыть, выглядит как
+  /// «приложение зависло».
+  final DateTime? failedAt;
+
+  /// Техническая причина — показывается по кнопке «подробности».
+  final String? failure;
+
+  /// Дорожка, которая сейчас качается. По ней карточка рисует индикатор:
+  /// человек должен видеть ожидание, иначе он тапает второй раз и
+  /// перезапускает загрузку с нуля.
+  final String? loadingSoundId;
 
   bool get isEmpty => layers.isEmpty;
   bool get isFull => layers.length >= PlayerController.maxLayers;
@@ -62,6 +79,9 @@ class MixState {
     Object? sleepAt = _keep,
     Object? mixName = _keep,
     bool? loading,
+    Object? failedAt = _keep,
+    Object? failure = _keep,
+    Object? loadingSoundId = _keep,
   }) =>
       MixState(
         layers: layers ?? this.layers,
@@ -69,6 +89,11 @@ class MixState {
         sleepAt: sleepAt == _keep ? this.sleepAt : sleepAt as DateTime?,
         mixName: mixName == _keep ? this.mixName : mixName as String?,
         loading: loading ?? this.loading,
+        failedAt: failedAt == _keep ? this.failedAt : failedAt as DateTime?,
+        failure: failure == _keep ? this.failure : failure as String?,
+        loadingSoundId: loadingSoundId == _keep
+            ? this.loadingSoundId
+            : loadingSoundId as String?,
       );
 
   static const _keep = Object();
@@ -112,6 +137,7 @@ class PlayerController extends StateNotifier<MixState> {
 
   final SoundsRepository _repo;
   final MurmurAudioHandler _handler;
+  final SoundCache _cache = SoundCache();
 
   /// Чтобы не дёргать систему на каждое движение ползунка громкости.
   String? _publishedSignature;
@@ -133,13 +159,34 @@ class PlayerController extends StateNotifier<MixState> {
 
   /// Тап в библиотеке: микс заменяется целиком одной дорожкой.
   Future<void> playOnly(Sound sound) async {
+    // Пока качается — повторные тапы игнорируем. Раньше каждый начинал
+    // загрузку заново, и звук обрывался на секунде.
+    if (state.loadingSoundId != null) return;
     await _stopAll();
-    state = state.copyWith(layers: [], mixName: null, loading: true);
-    await _addPlayer(sound, 0.8);
+    state = state.copyWith(
+      layers: [],
+      mixName: null,
+      loading: true,
+      loadingSoundId: sound.id,
+      failedAt: null,
+    );
+    try {
+      await _addPlayer(sound, 0.8);
+    } catch (e) {
+      state = state.copyWith(
+        loading: false,
+        loadingSoundId: null,
+        failedAt: DateTime.now(),
+        failure: '$e',
+      );
+      await _syncAmbient();
+      return;
+    }
     state = state.copyWith(
       layers: [MixLayer(sound: sound, volume: 0.8)],
       playing: true,
       loading: false,
+      loadingSoundId: null,
       mixName: null,
     );
     unawaited(_repo.pushRecent(sound.id));
@@ -149,12 +196,25 @@ class PlayerController extends StateNotifier<MixState> {
   /// Из полного плеера: дорожка добавляется к тем, что уже играют.
   Future<void> addLayer(Sound sound) async {
     if (state.isFull || state.contains(sound.id)) return;
-    state = state.copyWith(loading: true);
-    await _addPlayer(sound, 0.6);
+    if (state.loadingSoundId != null) return;
+    state =
+        state.copyWith(loading: true, loadingSoundId: sound.id, failedAt: null);
+    try {
+      await _addPlayer(sound, 0.6);
+    } catch (e) {
+      state = state.copyWith(
+        loading: false,
+        loadingSoundId: null,
+        failedAt: DateTime.now(),
+        failure: '$e',
+      );
+      return;
+    }
     state = state.copyWith(
       layers: [...state.layers, MixLayer(sound: sound, volume: 0.6)],
       playing: true,
       loading: false,
+      loadingSoundId: null,
       mixName: null,
     );
     unawaited(_repo.pushRecent(sound.id));
@@ -349,11 +409,20 @@ class PlayerController extends StateNotifier<MixState> {
       if (sound.bundled && sound.assetPath.isNotEmpty) {
         await player.setAsset(sound.assetPath);
       } else {
-        final url = await _repo.resolveUrl(sound.audioPath);
-        // LockCachingAudioSource кладёт файл на диск при первом
-        // прослушивании — дальше играет офлайн и без трафика.
-        // ignore: experimental_member_use
-        await player.setAudioSource(LockCachingAudioSource(Uri.parse(url)));
+        // Сначала диск: если файл уже качали, сети не будет вовсе.
+        var path = await _cache.cachedPath(sound.id);
+        if (path == null) {
+          final url = await _repo.resolveUrl(sound.audioPath);
+          try {
+            path = await _cache.download(sound.id, url);
+          } catch (e) {
+            // Скачать не вышло — играем потоком, чтобы человек
+            // всё-таки услышал звук.
+            debugPrint('cache download failed, streaming instead: $e');
+            await player.setUrl(url);
+          }
+        }
+        if (path != null) await player.setFilePath(path);
       }
       await player.setLoopMode(LoopMode.one);
       await player.setVolume(0);

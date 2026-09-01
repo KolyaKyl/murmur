@@ -78,20 +78,36 @@ class MixCover extends StatelessWidget {
     if (sounds.length == 1) {
       return SoundCover(sound: sounds.first, radius: radius);
     }
+
+    const gap = 2.0;
+
+    // Две дорожки — ровно пополам. Три — крупная слева, две справа
+    // столбиком: так видно состав, и ни одна не выглядит случайной.
+    if (sounds.length == 2) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: Row(
+          children: [
+            Expanded(child: SoundCover(sound: sounds[0], radius: 0)),
+            const SizedBox(width: gap),
+            Expanded(child: SoundCover(sound: sounds[1], radius: 0)),
+          ],
+        ),
+      );
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: Row(
         children: [
           Expanded(flex: 2, child: SoundCover(sound: sounds[0], radius: 0)),
-          const SizedBox(width: 1.5),
+          const SizedBox(width: gap),
           Expanded(
             child: Column(
               children: [
                 Expanded(child: SoundCover(sound: sounds[1], radius: 0)),
-                if (sounds.length > 2) ...[
-                  const SizedBox(height: 1.5),
-                  Expanded(child: SoundCover(sound: sounds[2], radius: 0)),
-                ],
+                const SizedBox(height: gap),
+                Expanded(child: SoundCover(sound: sounds[2], radius: 0)),
               ],
             ),
           ),

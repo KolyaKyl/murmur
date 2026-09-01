@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/theme/app_theme.dart';
 import 'package:murmur/features/sounds/data/sounds_providers.dart';
 import 'package:murmur/features/sounds/models/sound.dart';
+import 'package:murmur/features/sounds/player/player_controller.dart';
 import 'package:murmur/features/sounds/widgets/sound_cover.dart';
 
 /// Квадратная карточка библиотеки: картинка во всю плитку, поверх неё
@@ -30,6 +31,8 @@ class SoundCard extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final favorite = ref.watch(favoritesProvider).contains(sound.id);
+    final loading =
+        ref.watch(playerProvider.select((s) => s.loadingSoundId)) == sound.id;
 
     return Opacity(
       opacity: dimmed ? 0.45 : 1,
@@ -109,6 +112,21 @@ class SoundCard extends ConsumerWidget {
                       ),
                       onPressed: () =>
                           ref.read(favoritesProvider.notifier).toggle(sound.id),
+                    ),
+                  ),
+                // Пока дорожка качается — карточка это показывает.
+                // Иначе тап выглядит как «ничего не произошло», человек
+                // жмёт ещё раз и сбивает загрузку.
+                if (loading)
+                  const DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.black45),
+                    child: Center(
+                      child: SizedBox(
+                        width: 26,
+                        height: 26,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2.4, color: Colors.white),
+                      ),
                     ),
                   ),
                 if (badge != null)

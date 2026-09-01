@@ -76,12 +76,22 @@ class MiniPlayer extends ConsumerWidget {
                   ],
                 ),
               ),
-              IconButton(
-                visualDensity: VisualDensity.compact,
-                icon: Icon(mix.playing ? Icons.pause : Icons.play_arrow,
-                    size: collapsed ? 20 : 24),
-                onPressed: controller.togglePlay,
-              ),
+              if (mix.loading)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2.2),
+                  ),
+                )
+              else
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: Icon(mix.playing ? Icons.pause : Icons.play_arrow,
+                      size: collapsed ? 20 : 24),
+                  onPressed: controller.togglePlay,
+                ),
             ],
           ),
         ),

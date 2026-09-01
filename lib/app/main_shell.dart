@@ -144,6 +144,38 @@ class _MainShellState extends ConsumerState<MainShell>
 
   @override
   Widget build(BuildContext context) {
+    // Одно место на всё приложение: любая неудача плеера превращается
+    // в сообщение, откуда бы её ни вызвали — из библиотеки или из шторки.
+    ref.listen(playerProvider, (prev, next) {
+      if (next.failedAt == null || next.failedAt == prev?.failedAt) return;
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      final detail = next.failure;
+      messenger
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(AppL10n.of(context).somethingWentWrong),
+            action: detail == null
+                ? null
+                : SnackBarAction(
+                    label: 'Details',
+                    onPressed: () => showDialog<void>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        content: SelectableText(detail),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(AppL10n.of(ctx).cancel),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+          ),
+        );
+    });
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) => _onBack(didPop),
