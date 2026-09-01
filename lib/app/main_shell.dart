@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/app/widgets/glass_nav_bar.dart';
-import 'package:murmur/features/breathing/breathing_screen.dart';
+import 'package:murmur/features/breathing/screens/breathing_screen.dart';
 import 'package:murmur/features/home/home_screen.dart';
 import 'package:murmur/features/profile/profile_screen.dart';
 import 'package:murmur/features/sounds/screens/sounds_screen.dart';

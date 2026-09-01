@@ -135,9 +135,15 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Header
-                    Text(
-                      AppL10n.of(context).recordMood,
-                      style: Theme.of(context).textTheme.titleMedium,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: AppSpacing.xs),
+                        child: Text(
+                          AppL10n.of(context).recordMood,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.md),
 
@@ -176,12 +182,16 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                                           Theme.of(context).colorScheme;
                                       return InputChip(
                                         label: Text(tag),
+                                        // Выбранный чип инвертируем: на
+                                        // карточке полупрозрачная плёнка
+                                        // почти не видна, а инверсия читается
+                                        // в обеих темах.
                                         labelStyle: Theme.of(context)
                                             .textTheme
                                             .bodySmall
                                             ?.copyWith(
                                               color: selected
-                                                  ? scheme.onSurface
+                                                  ? scheme.surface
                                                   : scheme.onSurfaceVariant,
                                               fontWeight: selected
                                                   ? FontWeight.w600
@@ -198,14 +208,16 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                                         },
                                         deleteIcon: Icon(Icons.close,
                                             size: 15,
-                                            color: scheme.onSurfaceVariant),
+                                            color: selected
+                                                ? scheme.surface
+                                                : scheme.onSurfaceVariant),
                                         onDeleted: () => setState(() {
                                           _triggers.remove(tag);
                                           _selectedTriggers.remove(tag);
                                         }),
                                         backgroundColor: Colors.transparent,
                                         selectedColor: scheme.onSurface
-                                            .withValues(alpha: 0.13),
+                                            .withValues(alpha: 0.92),
                                         side: BorderSide(
                                           color: selected
                                               ? Colors.transparent

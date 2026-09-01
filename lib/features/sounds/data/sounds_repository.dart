@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:murmur/features/sounds/models/sound.dart';
+import 'package:murmur/core/models/catalog_category.dart';
 
 /// Каталог и пользовательские списки. Ошибки не глотает — экран сам
 /// решает, что показать.
@@ -26,9 +27,9 @@ class SoundsRepository {
     return snap.docs.map(Sound.fromDoc).toList();
   }
 
-  Future<List<SoundCategory>> fetchCategories() async {
+  Future<List<CatalogCategory>> fetchCategories() async {
     final snap = await _db.collection('soundCategories').orderBy('order').get();
-    return snap.docs.map(SoundCategory.fromDoc).toList();
+    return snap.docs.map(CatalogCategory.fromDoc).toList();
   }
 
   /// Ссылку на файл спрашиваем у Storage один раз за сессию — она стоит

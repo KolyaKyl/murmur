@@ -141,6 +141,7 @@ class PlayerController extends StateNotifier<MixState> {
   static const int maxLayers = 3;
   static const String ambientAsset = 'assets/audio/purring_cat.m4a';
   static const Duration fade = Duration(milliseconds: 500);
+  static const double _ambientVolume = 0.5;
 
   final SoundsRepository _repo;
   final MurmurAudioHandler _handler;
@@ -249,7 +250,7 @@ class PlayerController extends StateNotifier<MixState> {
 
   Future<void> setVolume(String soundId, double volume) async {
     final v = volume.clamp(0.0, 1.0);
-    await _players[soundId]?.setVolume(v);
+    await _players[soundId]?.setVolume(v * _duck);
     state = state.copyWith(
       layers: [
         for (final l in state.layers)
@@ -287,6 +288,31 @@ class PlayerController extends StateNotifier<MixState> {
       mixId: id,
     );
     await _syncAmbient();
+  }
+
+  /// Множитель громкости поверх выставленных вручную. 1 — обычное
+  /// звучание, 0.35 — приглушено под дыхательную практику, 0 — тишина.
+  ///
+  /// Раньше здесь был флаг, и получалась путаница: выключение звука
+  /// в практике снимало приглушение и делало микс громче, чем он был.
+  double _duck = 1;
+
+  static const double duckQuiet = 0.35;
+
+  double get duckLevel => _duck;
+
+  Future<void> setDuckLevel(double factor) async {
+    final next = factor.clamp(0.0, 1.0);
+    if (_duck == next) return;
+    _duck = next;
+    // Все дорожки уводим одновременно, а не по очереди: иначе на трёх
+    // слоях переход растягивается на полторы секунды.
+    await Future.wait([
+      for (final layer in state.layers)
+        if (_players[layer.sound.id] != null)
+          _fadeTo(_players[layer.sound.id]!, layer.volume * _duck),
+      if (_ambient.playing) _fadeTo(_ambient, _ambientVolume * _duck),
+    ]);
   }
 
   /// Микс сохранили — дальше правки идут в него же, а не плодят копии.
@@ -410,7 +436,7 @@ class PlayerController extends StateNotifier<MixState> {
         if (!_ambient.playing) {
           await _ambient.setVolume(0);
           unawaited(_ambient.play());
-          await _fadeTo(_ambient, 0.5);
+          await _fadeTo(_ambient, _ambientVolume * _duck);
         }
       } else if (_ambient.playing) {
         await _fadeTo(_ambient, 0);
@@ -448,7 +474,7 @@ class PlayerController extends StateNotifier<MixState> {
       await player.setVolume(0);
       _players[sound.id] = player;
       unawaited(player.play());
-      await _fadeTo(player, volume);
+      await _fadeTo(player, volume * _duck);
     } catch (e) {
       debugPrint('addPlayer(${sound.id}) failed: $e');
       await player.dispose();

@@ -1,11 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/features/sounds/models/sound.dart';
 import 'package:murmur/features/sounds/player/player_controller.dart';
+import 'package:murmur/core/models/catalog_category.dart';
 
 final soundsProvider = FutureProvider<List<Sound>>(
     (ref) => ref.read(soundsRepositoryProvider).fetchSounds());
 
-final categoriesProvider = FutureProvider<List<SoundCategory>>(
+final categoriesProvider = FutureProvider<List<CatalogCategory>>(
     (ref) => ref.read(soundsRepositoryProvider).fetchCategories());
 
 final mixesProvider = FutureProvider<List<SavedMix>>(

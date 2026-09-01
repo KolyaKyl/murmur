@@ -36,6 +36,9 @@ dependencies:
   audio_service: ^0.18.15
   audio_session: ^0.1.25
 
+  #дыхание
+  wakelock_plus: ^1.2.8
+
   #image
   image_picker: ^1.1.2
   image_cropper: ^9.1.0

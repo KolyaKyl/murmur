@@ -44,6 +44,7 @@ void main() async {
         ambientEnabledProvider
             .overrideWith((ref) => AmbientController(prefs, ambient)),
         audioHandlerProvider.overrideWithValue(audioHandler),
+        sharedPrefsProvider.overrideWithValue(prefs),
       ],
       child: const MurmurApp(),
     ),

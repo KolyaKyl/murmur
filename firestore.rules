@@ -32,6 +32,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /breathingPractices/{practiceId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    match /breathingCategories/{categoryId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
     // Всё, что не описано выше, запрещено.
     match /{document=**} {
       allow read, write: if false;

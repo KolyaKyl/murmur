@@ -17,6 +17,7 @@ import 'package:murmur/app/widgets/glass_nav_bar.dart';
 import 'package:murmur/l10n/app_localizations.dart';
 import 'package:murmur/features/sounds/screens/library_lists_screen.dart';
 import 'package:murmur/features/sounds/player/player_controller.dart';
+import 'package:murmur/features/breathing/screens/breathing_stats_screen.dart';
 
 /// Заготовка таба «Профиль». Содержимое перенесено из удалённого AppDrawer
 /// как есть, кроме психологических тестов. На экран пока никто не ведёт —
@@ -582,6 +583,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const MixesScreen())),
+          ),
+          ListTile(
+            leading: const Icon(Icons.air),
+            title: Text(AppL10n.of(context).breathingStats),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const BreathingStatsScreen())),
           ),
           ListTile(
             leading: const Icon(Icons.insert_chart_outlined_rounded),

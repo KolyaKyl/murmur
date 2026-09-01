@@ -5,6 +5,11 @@ import 'package:murmur/core/models/app_user.dart';
 import 'package:murmur/features/sounds/player/audio_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Хранилище настроек. Переопределяется в main() уже открытым экземпляром:
+/// открывать его повторно на каждый провайдер незачем.
+final sharedPrefsProvider = Provider<SharedPreferences>(
+    (ref) => throw UnimplementedError('sharedPrefsProvider не переопределён'));
+
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
 
 /// Индекс настроения за 7 дней. Раньше жил в состоянии WellnessCard и

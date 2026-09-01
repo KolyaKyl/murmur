@@ -253,5 +253,91 @@
   "noRecentYet": "Nothing played yet",
   "@noRecentYet": {},
   "editProfile": "Edit profile",
-  "@editProfile": {}
+  "@editProfile": {},
+  "phaseInhale": "Inhale",
+  "@phaseInhale": {},
+  "phaseHold": "Hold",
+  "@phaseHold": {},
+  "phaseExhale": "Exhale",
+  "@phaseExhale": {},
+  "phaseWait": "Wait",
+  "@phaseWait": {},
+  "getReady": "Get ready",
+  "@getReady": {},
+  "howLong": "How long",
+  "@howLong": {},
+  "startPractice": "Start",
+  "@startPractice": {},
+  "finishPractice": "Finish",
+  "@finishPractice": {},
+  "vibration": "Vibration",
+  "@vibration": {},
+  "vibrationHint": "marks every phase and counts the holds",
+  "@vibrationHint": {},
+  "keepSoundPlaying": "Keep the sound playing",
+  "@keepSoundPlaying": {},
+  "keepSoundHint": "quieter, under the breathing",
+  "@keepSoundHint": {},
+  "endsOnExhale": "practice ends on a full exhale",
+  "@endsOnExhale": {},
+  "sessionProgress": "{time} left · cycle {current} of {total}",
+  "@sessionProgress": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "soundKeepsPlaying": "{title} keeps playing",
+  "@soundKeepsPlaying": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "wellDone": "Well done",
+  "@wellDone": {},
+  "oneMoreRound": "One more round",
+  "@oneMoreRound": {},
+  "done": "Done",
+  "@done": {},
+  "breathingStats": "Breathing",
+  "@breathingStats": {},
+  "statBestStreak": "best streak",
+  "@statBestStreak": {},
+  "noPracticesYet": "Nothing here yet",
+  "@noPracticesYet": {},
+  "cyclesCount": "{count, plural, one{{count} cycle} other{{count} cycles}}",
+  "@cyclesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statStreakLabel": "{count, plural, one{day in a row} other{days in a row}}",
+  "@statStreakLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statSessionsLabel": "{count, plural, one{practice} other{practices}}",
+  "@statSessionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalTimeLabel": "total time",
+  "@totalTimeLabel": {}
 }

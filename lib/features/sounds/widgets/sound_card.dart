@@ -6,6 +6,7 @@ import 'package:murmur/features/sounds/models/sound.dart';
 import 'package:murmur/core/widgets/shimmer.dart';
 import 'package:murmur/features/sounds/player/player_controller.dart';
 import 'package:murmur/features/sounds/widgets/sound_cover.dart';
+import 'package:murmur/core/widgets/premium_badge.dart';
 
 /// Квадратная карточка библиотеки: картинка во всю плитку, поверх неё
 /// название и категория, сердечко и корона по углам.
@@ -95,8 +96,7 @@ class SoundCard extends ConsumerWidget {
                   const Positioned(
                     top: 9,
                     left: 9,
-                    child: Icon(Icons.workspace_premium,
-                        size: 18, color: Color(0xFFFFD24A)),
+                    child: PremiumBadge(),
                   ),
                 if (showHeart)
                   Positioned(

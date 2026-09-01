@@ -846,6 +846,156 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Edit profile'**
   String get editProfile;
+
+  /// No description provided for @phaseInhale.
+  ///
+  /// In en, this message translates to:
+  /// **'Inhale'**
+  String get phaseInhale;
+
+  /// No description provided for @phaseHold.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold'**
+  String get phaseHold;
+
+  /// No description provided for @phaseExhale.
+  ///
+  /// In en, this message translates to:
+  /// **'Exhale'**
+  String get phaseExhale;
+
+  /// No description provided for @phaseWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait'**
+  String get phaseWait;
+
+  /// No description provided for @getReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Get ready'**
+  String get getReady;
+
+  /// No description provided for @howLong.
+  ///
+  /// In en, this message translates to:
+  /// **'How long'**
+  String get howLong;
+
+  /// No description provided for @startPractice.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get startPractice;
+
+  /// No description provided for @finishPractice.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get finishPractice;
+
+  /// No description provided for @vibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration'**
+  String get vibration;
+
+  /// No description provided for @vibrationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'marks every phase and counts the holds'**
+  String get vibrationHint;
+
+  /// No description provided for @keepSoundPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the sound playing'**
+  String get keepSoundPlaying;
+
+  /// No description provided for @keepSoundHint.
+  ///
+  /// In en, this message translates to:
+  /// **'quieter, under the breathing'**
+  String get keepSoundHint;
+
+  /// No description provided for @endsOnExhale.
+  ///
+  /// In en, this message translates to:
+  /// **'practice ends on a full exhale'**
+  String get endsOnExhale;
+
+  /// No description provided for @sessionProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left · cycle {current} of {total}'**
+  String sessionProgress(String time, int current, int total);
+
+  /// No description provided for @soundKeepsPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} keeps playing'**
+  String soundKeepsPlaying(String title);
+
+  /// No description provided for @wellDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Well done'**
+  String get wellDone;
+
+  /// No description provided for @oneMoreRound.
+  ///
+  /// In en, this message translates to:
+  /// **'One more round'**
+  String get oneMoreRound;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @breathingStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathing'**
+  String get breathingStats;
+
+  /// No description provided for @statBestStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'best streak'**
+  String get statBestStreak;
+
+  /// No description provided for @noPracticesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet'**
+  String get noPracticesYet;
+
+  /// No description provided for @cyclesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} cycle} other{{count} cycles}}'**
+  String cyclesCount(int count);
+
+  /// No description provided for @statStreakLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{day in a row} other{days in a row}}'**
+  String statStreakLabel(int count);
+
+  /// No description provided for @statSessionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{practice} other{practices}}'**
+  String statSessionsLabel(int count);
+
+  /// No description provided for @totalTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'total time'**
+  String get totalTimeLabel;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

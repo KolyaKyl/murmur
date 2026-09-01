@@ -53,24 +53,6 @@ class Sound {
   }
 }
 
-class SoundCategory {
-  const SoundCategory(
-      {required this.id, required this.title, required this.order});
-
-  final String id;
-  final String title;
-  final int order;
-
-  factory SoundCategory.fromDoc(DocumentSnapshot doc) {
-    final d = doc.data() as Map<String, dynamic>;
-    return SoundCategory(
-      id: doc.id,
-      title: d['title'] as String? ?? doc.id,
-      order: (d['order'] as num?)?.toInt() ?? 0,
-    );
-  }
-}
-
 /// Сохранённый микс: состав и громкости.
 class SavedMix {
   const SavedMix({

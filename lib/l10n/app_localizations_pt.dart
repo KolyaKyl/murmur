@@ -387,4 +387,107 @@ class AppL10nPt extends AppL10n {
 
   @override
   String get editProfile => 'Editar perfil';
+
+  @override
+  String get phaseInhale => 'Inspire';
+
+  @override
+  String get phaseHold => 'Segure';
+
+  @override
+  String get phaseExhale => 'Expire';
+
+  @override
+  String get phaseWait => 'Espere';
+
+  @override
+  String get getReady => 'Prepare-se';
+
+  @override
+  String get howLong => 'Quanto tempo';
+
+  @override
+  String get startPractice => 'Começar';
+
+  @override
+  String get finishPractice => 'Terminar';
+
+  @override
+  String get vibration => 'Vibração';
+
+  @override
+  String get vibrationHint => 'marca cada fase e conta as pausas';
+
+  @override
+  String get keepSoundPlaying => 'Manter o som';
+
+  @override
+  String get keepSoundHint => 'mais baixo, sob a respiração';
+
+  @override
+  String get endsOnExhale => 'a prática termina com uma expiração completa';
+
+  @override
+  String sessionProgress(String time, int current, int total) {
+    return 'faltam $time · ciclo $current de $total';
+  }
+
+  @override
+  String soundKeepsPlaying(String title) {
+    return '$title continua tocando';
+  }
+
+  @override
+  String get wellDone => 'Muito bem';
+
+  @override
+  String get oneMoreRound => 'Mais uma rodada';
+
+  @override
+  String get done => 'Pronto';
+
+  @override
+  String get breathingStats => 'Respiração';
+
+  @override
+  String get statBestStreak => 'melhor sequência';
+
+  @override
+  String get noPracticesYet => 'Ainda não há nada aqui';
+
+  @override
+  String cyclesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ciclos',
+      one: '$count ciclo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statStreakLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'dias seguidos',
+      one: 'dia seguido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statSessionsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'práticas',
+      one: 'prática',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get totalTimeLabel => 'tempo total';
 }

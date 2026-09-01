@@ -16,7 +16,7 @@ class AddToMixSheet extends ConsumerWidget {
         context: context,
         isScrollControlled: true,
         useRootNavigator: true,
-        backgroundColor: Theme.of(context).colorScheme.surfaceDim,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         shape: const RoundedRectangleBorder(
           borderRadius:
               BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
