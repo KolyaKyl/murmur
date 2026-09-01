@@ -50,6 +50,29 @@ class SoundCover extends ConsumerWidget {
 
 /// Обложка микса: одна дорожка — её картинка, несколько — мозаика.
 /// Своей картинки у микса нет, поэтому показываем состав.
+/// Логотип вместо обложки: им подписан микс там, где места мало —
+/// в мини-плеере и на экране блокировки. Разрезанный квадрат в 36 пикселях
+/// превращается в кашу.
+class MixLogo extends StatelessWidget {
+  const MixLogo({super.key, this.radius = AppRadius.sm});
+
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: ColoredBox(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Image.asset('assets/logo/logo_round.png', fit: BoxFit.cover),
+        ),
+      ),
+    );
+  }
+}
+
 class MixCover extends StatelessWidget {
   const MixCover({
     super.key,
@@ -76,42 +99,49 @@ class MixCover extends StatelessWidget {
       );
     }
     if (sounds.length == 1) {
-      return SoundCover(sound: sounds.first, radius: radius);
-    }
-
-    const gap = 2.0;
-
-    // Две дорожки — ровно пополам. Три — крупная слева, две справа
-    // столбиком: так видно состав, и ни одна не выглядит случайной.
-    if (sounds.length == 2) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: Row(
-          children: [
-            Expanded(child: SoundCover(sound: sounds[0], radius: 0)),
-            const SizedBox(width: gap),
-            Expanded(child: SoundCover(sound: sounds[1], radius: 0)),
-          ],
-        ),
+      return AspectRatio(
+        aspectRatio: 1,
+        child: SoundCover(sound: sounds.first, radius: radius),
       );
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: Row(
-        children: [
-          Expanded(flex: 2, child: SoundCover(sound: sounds[0], radius: 0)),
-          const SizedBox(width: gap),
-          Expanded(
-            child: Column(
-              children: [
-                Expanded(child: SoundCover(sound: sounds[1], radius: 0)),
-                const SizedBox(height: gap),
-                Expanded(child: SoundCover(sound: sounds[2], radius: 0)),
-              ],
-            ),
-          ),
-        ],
+    // Коллаж всегда квадратный, каким бы ни был родитель: AspectRatio
+    // берёт наибольший квадрат, который влезает. Без него в неквадратной
+    // коробке половины растягиваются и читаются как две отдельные обложки.
+    return AspectRatio(
+      aspectRatio: 1,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: sounds.length == 2
+            // Две дорожки — квадрат, разрезанный ровно посередине.
+            ? Row(
+                // Без stretch дети получают свободную высоту и берут её
+                // из картинки: квадратная обложка схлопывает ряд вдвое,
+                // и половины превращаются в два квадрата рядом.
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: SoundCover(sound: sounds[0], radius: 0)),
+                  Expanded(child: SoundCover(sound: sounds[1], radius: 0)),
+                ],
+              )
+            // Три — слева половина, справа половина, разрезанная надвое.
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: SoundCover(sound: sounds[0], radius: 0)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                            child: SoundCover(sound: sounds[1], radius: 0)),
+                        Expanded(
+                            child: SoundCover(sound: sounds[2], radius: 0)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

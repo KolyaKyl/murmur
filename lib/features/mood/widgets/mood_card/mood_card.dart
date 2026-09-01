@@ -64,8 +64,6 @@ class MoodCardState extends State<MoodCard> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
@@ -73,10 +71,7 @@ class MoodCardState extends State<MoodCard> {
       ),
       child: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
+        decoration: appCardDecoration(context),
         child: SizedBox(
           height: cardHeight,
           child: Stack(

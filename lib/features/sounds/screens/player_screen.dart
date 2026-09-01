@@ -371,6 +371,8 @@ void _pickSleepTimer(BuildContext context, PlayerController controller) {
 Future<void> _saveMixDialog(
     BuildContext context, WidgetRef ref, MixState mix) async {
   final controller = TextEditingController(text: mix.title);
+  // Играет сохранённый микс — правим его. Собран на ходу — заводим новый.
+  final existingId = mix.mixId;
   final l10n = AppL10n.of(context);
   await showDialog<void>(
     context: context,
@@ -392,15 +394,18 @@ Future<void> _saveMixDialog(
           onPressed: () async {
             final name = controller.text.trim();
             if (name.isEmpty) return;
+            final id =
+                existingId ?? DateTime.now().millisecondsSinceEpoch.toString();
             await ref.read(soundsRepositoryProvider).saveMix(
                   SavedMix(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    id: id,
                     name: name,
                     soundIds: mix.layers.map((l) => l.sound.id).toList(),
                     volumes: {for (final l in mix.layers) l.sound.id: l.volume},
                     createdAt: DateTime.now(),
                   ),
                 );
+            ref.read(playerProvider.notifier).markSaved(id, name);
             ref.invalidate(mixesProvider);
             if (ctx.mounted) Navigator.pop(ctx);
           },

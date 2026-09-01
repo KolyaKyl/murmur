@@ -37,461 +37,360 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
     final colorScheme = Theme.of(context).colorScheme;
     final fillPercent = (widget.record.level / 10).clamp(0.0, 1.0);
 
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.lg)),
+    return Container(
       clipBehavior: Clip.antiAlias,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppL10n.of(context).moodRecord,
-                    style: textTheme.labelMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    textScaler: TextScaler.linear(1.0),
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+      decoration: appCardDecoration(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppL10n.of(context).moodRecord,
+                  style: textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  textScaler: TextScaler.linear(1.0),
+                ),
+                Text(
+                  DateFormat('yyyy-MM-dd HH:mm').format(
+                    widget.record.timestamp,
                   ),
-                  Text(
-                    DateFormat('yyyy-MM-dd HH:mm').format(
-                      widget.record.timestamp,
-                    ),
-                    style: textTheme.labelMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    textScaler: TextScaler.linear(1.0),
-                  ),
-                ],
-              ),
+                  style: textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  textScaler: TextScaler.linear(1.0),
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 6,
-            ),
-            //colors/level/emotion/index
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              child: Stack(
-                children: [
-                  // Color level
-                  Positioned.fill(
-                    child: Row(
-                      children: [
-                        // Filled part
-                        Expanded(
-                          flex: (fillPercent * 1000).round(),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  colorScheme.primary,
-                                  colorScheme.secondary,
-                                ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Notfilled part
-                        Expanded(
-                          flex: 1000 - (fillPercent * 1000).round(),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  widget.record.level < 10
-                                      ? colorScheme.secondary
-                                      : colorScheme.primary,
-                                  widget.record.level < 10
-                                      ? colorScheme.onPrimaryFixed
-                                      : colorScheme.secondary,
-                                ],
-                                // stops: [0.0, 0.95, 1.0],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  //Content
-                  Stack(
+          ),
+          const SizedBox(
+            height: 6,
+          ),
+          //colors/level/emotion/index
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            child: Stack(
+              children: [
+                // Color level
+                Positioned.fill(
+                  child: Row(
                     children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: GestureDetector(
-                          onLongPressStart:
-                              (LongPressStartDetails details) async {
-                            HapticFeedback.mediumImpact();
-                            final result = await showMenu(
-                              context: context,
-                              position: RelativeRect.fromLTRB(
-                                details.globalPosition.dx,
-                                details.globalPosition.dy,
-                                MediaQuery.of(context).size.width -
-                                    details.globalPosition.dx,
-                                MediaQuery.of(context).size.height -
-                                    details.globalPosition.dy,
-                              ),
-                              items: [
-                                PopupMenuItem(
-                                  value: 'edit',
-                                  height: 30,
-                                  child: SizedBox(
-                                    width: 80,
-                                    child: Text(AppL10n.of(context).edit,
-                                        style: TextStyle(fontSize: 14)),
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 'delete',
-                                  height: 30,
-                                  child: SizedBox(
-                                    width: 80,
-                                    child: Text(AppL10n.of(context).delete,
-                                        style: TextStyle(fontSize: 14)),
-                                  ),
-                                ),
+                      // Filled part
+                      Expanded(
+                        flex: (fillPercent * 1000).round(),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                colorScheme.primary,
+                                colorScheme.secondary,
                               ],
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.sm),
-                              ),
-                            );
-                            if (!context.mounted) return;
-                            bool updtRequired = false;
-                            if (result == 'edit') {
-                              updtRequired = await showMoodRegistrationDialog(
-                                  level: widget.record.level,
-                                  selectedTriggers:
-                                      widget.record.selectedTriggers,
-                                  note: widget.record.note,
-                                  dateTime: widget.record.timestamp,
-                                  context: context, //ошбка тут
-                                  appUser: widget.appUser,
-                                  emotion: Emotion.fromMap(
-                                      widget.record.toMap(),
-                                      id: widget.record.emotionId),
-                                  ref: ref,
-                                  recordId: widget.record.id);
-                              if (updtRequired) widget.update(true);
-                            } else if (result == 'delete') {
-                              await showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title:
-                                      Text(AppL10n.of(context).deleteRecordQ),
-                                  content: Text(
-                                      overflow: TextOverflow.clip,
-                                      AppL10n.of(context).deleteRecordBody),
-                                  actions: [
-                                    FilledButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      style: FilledButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              AppRadius.md),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 8),
-                                        foregroundColor:
-                                            Theme.of(context).colorScheme.error,
-                                        backgroundColor: Colors.transparent,
-                                      ),
-                                      child: Text(
-                                        AppL10n.of(context).cancel,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleLarge
-                                            ?.copyWith(
-                                              fontSize: 18,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .error,
-                                            ),
-                                      ),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () async {
-                                        final firebaseService =
-                                            FirebaseService();
-                                        final newIndex = await firebaseService
-                                            .deleteMoodRecord(
-                                          widget.appUser.id,
-                                          widget.record.id,
-                                        );
-                                        updtRequired = newIndex != null;
-                                        if (newIndex != null) {
-                                          ref
-                                              .read(moodIndexProvider.notifier)
-                                              .state = newIndex;
-                                          widget.update(false);
-                                        }
-
-                                        if (!context.mounted) return;
-                                        Navigator.pop(context);
-                                      },
-                                      style: FilledButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              AppRadius.md),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 8),
-                                        foregroundColor: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                        backgroundColor: Colors.transparent,
-                                      ),
-                                      child: Text(
-                                        AppL10n.of(context).delete,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleLarge
-                                            ?.copyWith(fontSize: 18),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          },
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(AppRadius.lg),
-                            onTap: () {},
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color:
-                                    colorScheme.surfaceContainer.withAlpha(18),
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.lg),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const SizedBox(height: 6),
-                                  Row(
-                                    children: [
-                                      const SizedBox(width: 12),
-
-                                      Hero(
-                                        tag:
-                                            'mood-emoji-${widget.record.emoji}-${widget.record.id}',
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: Text(
-                                            widget.record.emoji,
-                                            style:
-                                                const TextStyle(fontSize: 60),
-                                            textScaler: TextScaler.linear(1.0),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-
-                                      // Level and emotion name
-                                      ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                            maxWidth: MediaQuery.of(context)
-                                                    .size
-                                                    .width -
-                                                170),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Material(
-                                              color: Colors.transparent,
-                                              child: Hero(
-                                                tag:
-                                                    'mood-emoji-${widget.record.name}-text-${widget.record.id}',
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: Text(
-                                                    widget.record.name,
-                                                    style: textTheme.titleLarge
-                                                        ?.copyWith(
-                                                      fontSize: 24,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                    textScaler:
-                                                        TextScaler.linear(1.0),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              'Level: ${widget.record.level.toStringAsFixed(0)}',
-                                              style: textTheme.titleLarge
-                                                  ?.copyWith(
-                                                fontSize: 18,
-                                              ),
-                                              textScaler:
-                                                  TextScaler.linear(1.0),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(child: SizedBox.shrink()),
-
-                                      //recrod index
-                                      ConstrainedBox(
-                                        constraints:
-                                            BoxConstraints(maxWidth: 170),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              AppL10n.of(context).indexLabel,
-                                              style: textTheme.titleLarge
-                                                  ?.copyWith(
-                                                fontSize: 18,
-                                              ),
-                                              textScaler:
-                                                  TextScaler.linear(1.0),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              convertToIndex(
-                                                  widget.record.moodIndex),
-                                              style: textTheme.titleMedium
-                                                  ?.copyWith(fontSize: 24),
-                                              overflow: TextOverflow.ellipsis,
-                                              textScaler:
-                                                  TextScaler.linear(1.0),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                ],
-                              ),
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
                             ),
                           ),
                         ),
                       ),
-                      Positioned(
-                        bottom: 3,
-                        left: 0,
-                        right: 0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              AppL10n.of(context).holdForOptions,
-                              style: textTheme.labelMedium?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
+                      // Notfilled part
+                      Expanded(
+                        flex: 1000 - (fillPercent * 1000).round(),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                widget.record.level < 10
+                                    ? colorScheme.secondary
+                                    : colorScheme.primary,
+                                widget.record.level < 10
+                                    ? colorScheme.onPrimaryFixed
+                                    : colorScheme.secondary,
+                              ],
+                              // stops: [0.0, 0.95, 1.0],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                ),
 
-            // Triggers (if any)
-            if (widget.record.selectedTriggers.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(
-                AppL10n.of(context).triggersLabel,
-                style: textTheme.labelMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                textScaler: TextScaler.linear(1.0),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width - 40,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: widget.record.selectedTriggers
-                        .map(
-                          (t) => Padding(
-                            padding: const EdgeInsets.only(
-                                right: 6), // spacing between chips
-                            child: Chip(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 2, vertical: 4),
-                              visualDensity: VisualDensity.compact,
-                              label: Text(
-                                t,
-                                style: textTheme.bodyMedium,
+                //Content
+                Stack(
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: GestureDetector(
+                        onLongPressStart:
+                            (LongPressStartDetails details) async {
+                          HapticFeedback.mediumImpact();
+                          final result = await showMenu(
+                            context: context,
+                            position: RelativeRect.fromLTRB(
+                              details.globalPosition.dx,
+                              details.globalPosition.dy,
+                              MediaQuery.of(context).size.width -
+                                  details.globalPosition.dx,
+                              MediaQuery.of(context).size.height -
+                                  details.globalPosition.dy,
+                            ),
+                            items: [
+                              PopupMenuItem(
+                                value: 'edit',
+                                height: 30,
+                                child: SizedBox(
+                                  width: 80,
+                                  child: Text(AppL10n.of(context).edit,
+                                      style: textTheme.bodyMedium),
+                                ),
                               ),
-                              backgroundColor: colorScheme.primaryContainer,
+                              PopupMenuItem(
+                                value: 'delete',
+                                height: 30,
+                                child: SizedBox(
+                                  width: 80,
+                                  child: Text(AppL10n.of(context).delete,
+                                      style: textTheme.bodyMedium),
+                                ),
+                              ),
+                            ],
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                            ),
+                          );
+                          if (!context.mounted) return;
+                          bool updtRequired = false;
+                          if (result == 'edit') {
+                            updtRequired = await showMoodRegistrationDialog(
+                                level: widget.record.level,
+                                selectedTriggers:
+                                    widget.record.selectedTriggers,
+                                note: widget.record.note,
+                                dateTime: widget.record.timestamp,
+                                context: context, //ошбка тут
+                                appUser: widget.appUser,
+                                emotion: Emotion.fromMap(widget.record.toMap(),
+                                    id: widget.record.emotionId),
+                                ref: ref,
+                                recordId: widget.record.id);
+                            if (updtRequired) widget.update(true);
+                          } else if (result == 'delete') {
+                            await showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(AppL10n.of(context).deleteRecordQ),
+                                content: Text(
+                                    overflow: TextOverflow.clip,
+                                    AppL10n.of(context).deleteRecordBody),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: colorScheme.error,
+                                    ),
+                                    child: Text(AppL10n.of(context).cancel),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () async {
+                                      final firebaseService = FirebaseService();
+                                      final newIndex = await firebaseService
+                                          .deleteMoodRecord(
+                                        widget.appUser.id,
+                                        widget.record.id,
+                                      );
+                                      updtRequired = newIndex != null;
+                                      if (newIndex != null) {
+                                        ref
+                                            .read(moodIndexProvider.notifier)
+                                            .state = newIndex;
+                                        widget.update(false);
+                                      }
+
+                                      if (!context.mounted) return;
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(AppL10n.of(context).delete),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
+                          onTap: () {},
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainer.withAlpha(18),
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Hero(
+                                      tag:
+                                          'mood-emoji-${widget.record.emoji}-${widget.record.id}',
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Text(
+                                          widget.record.emoji,
+                                          style: const TextStyle(fontSize: 44),
+                                          textScaler: TextScaler.linear(1.0),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.md - 4),
+                                    // Название и сила — теми же ролями, что
+                                    // название и категория дорожки.
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Hero(
+                                            tag:
+                                                'mood-emoji-${widget.record.name}-text-${widget.record.id}',
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: Text(
+                                                widget.record.name,
+                                                style: textTheme.bodyLarge
+                                                    ?.copyWith(fontSize: 17),
+                                                textScaler:
+                                                    TextScaler.linear(1.0),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            '${AppL10n.of(context).levelLabel} ${widget.record.level.toStringAsFixed(0)}',
+                                            style: textTheme.labelMedium,
+                                            textScaler: TextScaler.linear(1.0),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.sm),
+                                    Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          AppL10n.of(context).indexLabel,
+                                          style: textTheme.labelMedium,
+                                          textScaler: TextScaler.linear(1.0),
+                                        ),
+                                        Text(
+                                          convertToIndex(
+                                              widget.record.moodIndex),
+                                          style: textTheme.bodyLarge
+                                              ?.copyWith(fontSize: 20),
+                                          textScaler: TextScaler.linear(1.0),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                // Подсказка в потоке, а не поверх строки:
+                                // на компактной карточке она налезала.
+                                Text(
+                                  AppL10n.of(context).holdForOptions,
+                                  style: textTheme.labelSmall,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
-                        )
-                        .toList(),
-                  ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Triggers (if any)
+          if (widget.record.selectedTriggers.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              AppL10n.of(context).triggersLabel,
+              style: textTheme.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              textScaler: TextScaler.linear(1.0),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: widget.record.selectedTriggers
+                      .map(
+                        (t) => Padding(
+                          padding: const EdgeInsets.only(
+                              right: 6), // spacing between chips
+                          child: Chip(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 2),
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            label: Text(t, style: textTheme.labelMedium),
+                            backgroundColor: Colors.transparent,
+                            side: BorderSide(color: colorScheme.outlineVariant),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: AppRadius.smAll,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
-            ],
-            const SizedBox(height: 2),
-            // Note
-            if (widget.record.note.isNotEmpty) ...[
-              Text(
-                AppL10n.of(context).noteLabel,
-                style: textTheme.labelMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                textScaler: TextScaler.linear(1.0),
-              ),
-              Text(
-                widget.record.note,
-                style: textTheme.labelMedium?.copyWith(
-                  // color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                ),
-                overflow: TextOverflow.ellipsis,
-                textScaler: TextScaler.linear(1.0),
-              ),
-            ],
+            ),
           ],
-        ),
+          const SizedBox(height: 2),
+          // Note
+          if (widget.record.note.isNotEmpty) ...[
+            Text(
+              AppL10n.of(context).noteLabel,
+              style: textTheme.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              textScaler: TextScaler.linear(1.0),
+            ),
+            Text(
+              widget.record.note,
+              style: textTheme.bodyMedium,
+              overflow: TextOverflow.ellipsis,
+              textScaler: TextScaler.linear(1.0),
+            ),
+          ],
+        ],
       ),
     );
   }

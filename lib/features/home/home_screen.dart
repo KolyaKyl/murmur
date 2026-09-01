@@ -194,12 +194,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 /// Шапка главного экрана: живой градиент, индекс настроения слева сверху,
 /// имя слева снизу, котик справа снизу. По скроллу схлопывается в обычный
 /// аппбар, где остаётся только имя.
-class _HomeAppBar extends StatelessWidget {
+const double _kHomeAppBarHeight = 180;
+
+class _HomeAppBar extends StatefulWidget {
   const _HomeAppBar({required this.moodIndex});
 
-  static const double _expandedHeight = 180;
-
   final int moodIndex;
+
+  @override
+  State<_HomeAppBar> createState() => _HomeAppBarState();
+}
+
+class _HomeAppBarState extends State<_HomeAppBar> {
+  /// Схлопнутую шапку не видно — анимировать её значит зря будить экран.
+  bool _visible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +216,7 @@ class _HomeAppBar extends StatelessWidget {
 
     return SliverAppBar(
       pinned: true,
-      expandedHeight: _expandedHeight,
+      expandedHeight: _kHomeAppBarHeight,
       backgroundColor: scheme.surface,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
@@ -219,41 +227,55 @@ class _HomeAppBar extends StatelessWidget {
             const EdgeInsetsDirectional.only(start: 20, bottom: AppSpacing.md),
         title: Text(
           'MurMur',
-          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          // Всегда белый: под ним градиент, и в светлой теме чёрный
+          // текст на нём тонет.
+          style: textTheme.titleLarge
+              ?.copyWith(fontWeight: FontWeight.w700, color: Colors.white),
         ),
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            const AnimatedGradient(),
-            // Вуаль, иначе белый текст на светлых участках градиента тонет.
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.10),
-                    Colors.black.withValues(alpha: 0.34),
-                  ],
+        background: LayoutBuilder(
+          builder: (context, constraints) {
+            final visible = constraints.maxHeight >
+                kToolbarHeight + MediaQuery.paddingOf(context).top + 8;
+            if (visible != _visible) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) setState(() => _visible = visible);
+              });
+            }
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                AnimatedGradient(animate: _visible),
+                // Вуаль, иначе белый текст на светлых участках градиента тонет.
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.10),
+                        Colors.black.withValues(alpha: 0.34),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Image.asset(
-                'assets/logo/logo_appar_flex.png',
-                width: 164,
-                height: 164,
-                opacity: const AlwaysStoppedAnimation(0.92),
-              ),
-            ),
-            Positioned(
-              left: 20,
-              top: MediaQuery.paddingOf(context).top + AppSpacing.sm,
-              child: _MoodIndexBadge(moodIndex: moodIndex),
-            ),
-          ],
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Image.asset(
+                    'assets/logo/logo_appar_flex.png',
+                    width: 164,
+                    height: 164,
+                    opacity: const AlwaysStoppedAnimation(0.92),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  top: MediaQuery.paddingOf(context).top + AppSpacing.sm,
+                  child: _MoodIndexBadge(moodIndex: widget.moodIndex),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

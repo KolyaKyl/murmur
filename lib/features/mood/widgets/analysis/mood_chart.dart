@@ -90,7 +90,7 @@ class _DailyMoodChartState extends State<DailyMoodChart> {
       clipBehavior: Clip.antiAlias,
       child: Container(
         height: 270,
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        decoration: appCardDecoration(context),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
           child: Column(

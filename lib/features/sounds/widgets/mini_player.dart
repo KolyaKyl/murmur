@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/app/widgets/glass_nav_bar.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/core/widgets/shimmer.dart';
 import 'package:murmur/features/sounds/player/player_controller.dart';
 import 'package:murmur/features/sounds/screens/player_screen.dart';
 import 'package:murmur/features/sounds/widgets/sound_cover.dart';
@@ -37,9 +38,14 @@ class MiniPlayer extends ConsumerWidget {
               SizedBox(
                 width: cover,
                 height: cover,
-                child: MixCover(
-                  sounds: mix.layers.map((l) => l.sound).toList(),
-                  radius: AppRadius.sm,
+                child: Shimmer(
+                  enabled: mix.loading,
+                  child: mix.layers.length > 1
+                      ? const MixLogo()
+                      : MixCover(
+                          sounds: mix.layers.map((l) => l.sound).toList(),
+                          radius: AppRadius.sm,
+                        ),
                 ),
               ),
               const SizedBox(width: AppSpacing.sm + 2),
@@ -76,22 +82,12 @@ class MiniPlayer extends ConsumerWidget {
                   ],
                 ),
               ),
-              if (mix.loading)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2.2),
-                  ),
-                )
-              else
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  icon: Icon(mix.playing ? Icons.pause : Icons.play_arrow,
-                      size: collapsed ? 20 : 24),
-                  onPressed: controller.togglePlay,
-                ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: Icon(mix.playing ? Icons.pause : Icons.play_arrow,
+                    size: collapsed ? 20 : 24),
+                onPressed: mix.loading ? null : controller.togglePlay,
+              ),
             ],
           ),
         ),

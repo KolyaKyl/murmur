@@ -66,84 +66,38 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
 
   void _showAddTagDialog(BuildContext context) {
     final textController = TextEditingController();
+    final l10n = AppL10n.of(context);
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-        title: Text(AppL10n.of(context).addTrigger),
+        title: Text(l10n.addTrigger),
+        // Обводку и заливку поля задаёт тема — раньше они были
+        // переписаны здесь вручную и жили своей жизнью.
         content: TextField(
-          cursorColor: Theme.of(context).colorScheme.onSurface,
           controller: textController,
+          autofocus: true,
+          textCapitalization: TextCapitalization.none,
           decoration: InputDecoration(
             prefixText: '#',
-            hintText: AppL10n.of(context).triggerHint,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-            ),
-            filled: true,
-            fillColor: Theme.of(context).colorScheme.surfaceContainer,
-            contentPadding: const EdgeInsets.all(8),
+            hintText: l10n.triggerHint,
           ),
+          onSubmitted: (_) {
+            _addTrigger(textController.text.trim());
+            Navigator.pop(ctx);
+          },
         ),
         actions: [
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-            },
-            style: FilledButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              foregroundColor: Theme.of(context).colorScheme.error,
-              backgroundColor: Colors.transparent,
-            ),
-            child: Text(
-              AppL10n.of(context).cancel,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: 18,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-            ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () {
-              if (textController.text.isNotEmpty) {
-                _addTrigger('#${textController.text.trim()}');
-                Navigator.pop(ctx);
-              }
+              _addTrigger(textController.text.trim());
+              Navigator.pop(ctx);
             },
-            style: FilledButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              foregroundColor: Theme.of(context).colorScheme.onSurface,
-              backgroundColor: Colors.transparent,
-            ),
-            child: Text(
-              AppL10n.of(context).add,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontSize: 18),
-            ),
+            child: Text(l10n.add),
           ),
         ],
       ),
@@ -162,7 +116,9 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
         }
       },
       child: Material(
-        color: Theme.of(context).colorScheme.surfaceBright,
+        // Затемнение, а не серая заливка: диалог должен читаться
+        // как слой поверх экрана.
+        color: Colors.black.withValues(alpha: 0.55),
         child: Center(
           child: GestureDetector(
             onTap: () {
@@ -171,12 +127,9 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
               }
             },
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12),
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(AppRadius.xl),
-              ),
+              margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: appCardDecoration(context, radius: AppRadius.xl),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -184,14 +137,9 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                     // Header
                     Text(
                       AppL10n.of(context).recordMood,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontSize: 18),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(
-                      height: 6,
-                    ),
+                    const SizedBox(height: AppSpacing.md),
 
                     // Interactive tap-slider
                     LevelCard(
@@ -221,58 +169,65 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                                 spacing: 10,
                                 children: [
                                   ..._triggers.map(
-                                    (tag) => InputChip(
-                                      label: Text(
-                                        tag,
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface,
-                                        ),
-                                      ),
-                                      showCheckmark: false,
-                                      selected: _selectedTriggers.contains(tag),
-                                      onSelected: (selected) {
-                                        setState(() {
-                                          if (selected) {
-                                            _selectedTriggers.add(tag);
-                                          } else {
-                                            _selectedTriggers.remove(tag);
-                                          }
-                                        });
-                                      },
-                                      deleteIcon: Icon(
-                                        Icons.close,
-                                        size: 16,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                      ),
-                                      onDeleted: () => setState(() {
-                                        _triggers.remove(tag);
-                                        _selectedTriggers.remove(tag);
-                                      }),
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainer,
-                                      selectedColor:
-                                          Theme.of(context).colorScheme.primary,
-                                      shape: RoundedRectangleBorder(
+                                    (tag) {
+                                      final selected =
+                                          _selectedTriggers.contains(tag);
+                                      final scheme =
+                                          Theme.of(context).colorScheme;
+                                      return InputChip(
+                                        label: Text(tag),
+                                        labelStyle: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                              color: selected
+                                                  ? scheme.onSurface
+                                                  : scheme.onSurfaceVariant,
+                                              fontWeight: selected
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                            ),
+                                        showCheckmark: false,
+                                        selected: selected,
+                                        onSelected: (value) {
+                                          setState(() {
+                                            value
+                                                ? _selectedTriggers.add(tag)
+                                                : _selectedTriggers.remove(tag);
+                                          });
+                                        },
+                                        deleteIcon: Icon(Icons.close,
+                                            size: 15,
+                                            color: scheme.onSurfaceVariant),
+                                        onDeleted: () => setState(() {
+                                          _triggers.remove(tag);
+                                          _selectedTriggers.remove(tag);
+                                        }),
+                                        backgroundColor: Colors.transparent,
+                                        selectedColor: scheme.onSurface
+                                            .withValues(alpha: 0.13),
                                         side: BorderSide(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .outline,
-                                          width: 1.0,
+                                          color: selected
+                                              ? Colors.transparent
+                                              : scheme.outlineVariant,
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(AppRadius.sm),
-                                      ),
-                                    ),
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: AppRadius.smAll,
+                                        ),
+                                      );
+                                    },
                                   ),
                                   ActionChip(
-                                    backgroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainer,
+                                    backgroundColor: Colors.transparent,
+                                    side: BorderSide(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .outlineVariant),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: AppRadius.smAll,
+                                    ),
+                                    labelStyle:
+                                        Theme.of(context).textTheme.bodySmall,
                                     label: Text(
                                         AppL10n.of(context).addTriggerButton),
                                     onPressed: () => _showAddTagDialog(context),
@@ -301,38 +256,12 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                             maxHeight: 96,
                           ),
                           child: TextField(
-                            cursorColor:
-                                Theme.of(context).colorScheme.onSurface,
                             controller: _noteController,
                             focusNode: _noteFocusNode,
                             decoration: InputDecoration(
                               hintText: AppL10n.of(context).addOptionalNote,
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.md),
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.outline,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.md),
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.outline,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.md),
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.outline,
-                                ),
-                              ),
-                              filled: true,
-                              fillColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer,
-                              contentPadding: const EdgeInsets.all(16),
+                              contentPadding:
+                                  const EdgeInsets.all(AppSpacing.md),
                             ),
                             maxLines: null,
                             keyboardType: TextInputType.multiline,
@@ -346,35 +275,19 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                       ),
                     ),
 
-                    // Buttons
+                    const SizedBox(height: AppSpacing.sm),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        FilledButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          style: FilledButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppRadius.md),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: TextButton.styleFrom(
                             foregroundColor:
                                 Theme.of(context).colorScheme.error,
-                            backgroundColor: Colors.transparent,
                           ),
-                          child: Text(
-                            AppL10n.of(context).cancel,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontSize: 18,
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                          ),
+                          child: Text(AppL10n.of(context).cancel),
                         ),
+                        const SizedBox(width: AppSpacing.sm),
                         FilledButton(
                           onPressed: () {
                             widget.onSave(
@@ -386,26 +299,10 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                                   : _noteController.text,
                             );
                           },
-                          style: FilledButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppRadius.md),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onSurface,
-                            backgroundColor: Colors.transparent,
-                          ),
-                          child: Text(
-                            AppL10n.of(context).save,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(fontSize: 18),
-                          ),
+                          child: Text(AppL10n.of(context).save),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),

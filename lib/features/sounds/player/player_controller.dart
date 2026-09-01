@@ -36,6 +36,7 @@ class MixState {
     this.failedAt,
     this.failure,
     this.loadingSoundId,
+    this.mixId,
   });
 
   final List<MixLayer> layers;
@@ -56,6 +57,10 @@ class MixState {
   /// человек должен видеть ожидание, иначе он тапает второй раз и
   /// перезапускает загрузку с нуля.
   final String? loadingSoundId;
+
+  /// Идентификатор сохранённого микса, если играет именно он.
+  /// Пусто — набор собран на ходу и ещё нигде не сохранён.
+  final String? mixId;
 
   bool get isEmpty => layers.isEmpty;
   bool get isFull => layers.length >= PlayerController.maxLayers;
@@ -82,6 +87,7 @@ class MixState {
     Object? failedAt = _keep,
     Object? failure = _keep,
     Object? loadingSoundId = _keep,
+    Object? mixId = _keep,
   }) =>
       MixState(
         layers: layers ?? this.layers,
@@ -94,6 +100,7 @@ class MixState {
         loadingSoundId: loadingSoundId == _keep
             ? this.loadingSoundId
             : loadingSoundId as String?,
+        mixId: mixId == _keep ? this.mixId : mixId as String?,
       );
 
   static const _keep = Object();
@@ -166,6 +173,7 @@ class PlayerController extends StateNotifier<MixState> {
     state = state.copyWith(
       layers: [],
       mixName: null,
+      mixId: null,
       loading: true,
       loadingSoundId: sound.id,
       failedAt: null,
@@ -216,6 +224,7 @@ class PlayerController extends StateNotifier<MixState> {
       loading: false,
       loadingSoundId: null,
       mixName: null,
+      mixId: null,
     );
     unawaited(_repo.pushRecent(sound.id));
     await _syncAmbient();
@@ -232,6 +241,7 @@ class PlayerController extends StateNotifier<MixState> {
       layers: layers,
       playing: layers.isEmpty ? false : state.playing,
       mixName: null,
+      mixId: null,
     );
     if (layers.isEmpty) setSleepTimer(null);
     await _syncAmbient();
@@ -259,7 +269,7 @@ class PlayerController extends StateNotifier<MixState> {
   }
 
   Future<void> playMix(List<Sound> sounds, Map<String, double> volumes,
-      {String? name}) async {
+      {String? name, String? id}) async {
     await _stopAll();
     state = state.copyWith(layers: [], loading: true);
     final layers = <MixLayer>[];
@@ -270,8 +280,18 @@ class PlayerController extends StateNotifier<MixState> {
       unawaited(_repo.pushRecent(s.id));
     }
     state = state.copyWith(
-        layers: layers, playing: true, loading: false, mixName: name);
+      layers: layers,
+      playing: true,
+      loading: false,
+      mixName: name,
+      mixId: id,
+    );
     await _syncAmbient();
+  }
+
+  /// Микс сохранили — дальше правки идут в него же, а не плодят копии.
+  void markSaved(String id, String name) {
+    state = state.copyWith(mixId: id, mixName: name);
   }
 
   /// Убрать всё из плеера: приходит по «стоп» с экрана блокировки.

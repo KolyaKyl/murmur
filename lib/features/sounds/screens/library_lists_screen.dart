@@ -78,56 +78,67 @@ class MixesScreen extends ConsumerWidget {
                     for (final id in mix.soundIds)
                       if (byId[id] != null) byId[id]!
                   ];
-                  return Container(
-                    padding: const EdgeInsets.all(11),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer,
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                            width: 62,
-                            height: 62,
-                            child: MixCover(sounds: sounds)),
-                        const SizedBox(width: AppSpacing.md - 3),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(mix.name,
+                  void play() {
+                    if (sounds.isEmpty) return;
+                    ref.read(playerProvider.notifier).playMix(
+                          sounds,
+                          mix.volumes,
+                          name: mix.name,
+                          id: mix.id,
+                        );
+                  }
+
+                  return GestureDetector(
+                    // Тап по всей строке, а не только по кнопке: кнопка в 34
+                    // пикселя — мишень, в которую надо целиться.
+                    onTap: play,
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      padding: const EdgeInsets.all(11),
+                      decoration: appCardDecoration(context),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                              width: 62,
+                              height: 62,
+                              child: MixCover(sounds: sounds)),
+                          const SizedBox(width: AppSpacing.md - 3),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(mix.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge),
+                                const SizedBox(height: 2),
+                                Text(
+                                  sounds.map((s) => s.title).join(' · '),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodyLarge),
-                              const SizedBox(height: 2),
-                              Text(
-                                sounds.map((s) => s.title).join(' · '),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.labelMedium,
-                              ),
-                            ],
+                                  style:
+                                      Theme.of(context).textTheme.labelMedium,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.play_arrow),
-                          onPressed: sounds.isEmpty
-                              ? null
-                              : () => ref
-                                  .read(playerProvider.notifier)
-                                  .playMix(sounds, mix.volumes, name: mix.name),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete_outline,
-                              color: Theme.of(context).colorScheme.error),
-                          onPressed: () async {
-                            await ref
-                                .read(soundsRepositoryProvider)
-                                .deleteMix(mix.id);
-                            ref.invalidate(mixesProvider);
-                          },
-                        ),
-                      ],
+                          IconButton(
+                            icon: const Icon(Icons.play_arrow),
+                            onPressed: sounds.isEmpty ? null : play,
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete_outline,
+                                color: Theme.of(context).colorScheme.error),
+                            onPressed: () async {
+                              await ref
+                                  .read(soundsRepositoryProvider)
+                                  .deleteMix(mix.id);
+                              ref.invalidate(mixesProvider);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },

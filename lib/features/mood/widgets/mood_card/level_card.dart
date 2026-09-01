@@ -169,8 +169,7 @@ class _LevelCardState extends State<LevelCard>
                                       widget.label,
                                       style: Theme.of(context)
                                           .textTheme
-                                          .headlineSmall
-                                          ?.copyWith(fontSize: 30),
+                                          .headlineSmall,
                                     ),
                                   ),
                                 ),
@@ -183,8 +182,7 @@ class _LevelCardState extends State<LevelCard>
                               ),
                               Text(
                                 AppL10n.of(context).levelLabel,
-                                style:
-                                    textTheme.bodyLarge?.copyWith(fontSize: 18),
+                                style: textTheme.labelMedium,
                               ),
                             ],
                           ),
@@ -193,9 +191,7 @@ class _LevelCardState extends State<LevelCard>
                       const SizedBox(height: 12),
                       Text(
                         AppL10n.of(context).swipeOrTapToAdjust,
-                        style: textTheme.labelMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                        style: textTheme.labelMedium,
                       ),
                     ],
                   ),

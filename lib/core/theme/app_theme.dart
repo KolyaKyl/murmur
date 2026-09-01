@@ -97,6 +97,47 @@ extension MoodStatusColorsX on ThemeData {
   MoodStatusColors get moodStatus => extension<MoodStatusColors>()!;
 }
 
+/// Поверхность карточки: мягкий градиент сверху вниз, волосяная светлая
+/// линия по верхней кромке и мягкая тень. Даёт объём, будто свет падает
+/// сверху — плоская заливка выглядела серым пятном.
+///
+/// Не стекло: под карточкой ровный фон, размывать нечего, а `BackdropFilter`
+/// на каждой карточке в прокручиваемой сетке ощутимо ест батарею.
+BoxDecoration appCardDecoration(
+  BuildContext context, {
+  double radius = AppRadius.lg,
+}) {
+  final scheme = Theme.of(context).colorScheme;
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  final base = scheme.surfaceContainer;
+
+  return BoxDecoration(
+    borderRadius: BorderRadius.circular(radius),
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color.alphaBlend(
+            Colors.white.withValues(alpha: isDark ? 0.06 : 0.55), base),
+        Color.alphaBlend(
+            Colors.black.withValues(alpha: isDark ? 0.10 : 0.03), base),
+      ],
+    ),
+    border: Border(
+      top: BorderSide(
+        color: Colors.white.withValues(alpha: isDark ? 0.10 : 0.65),
+      ),
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.07),
+        blurRadius: 14,
+        offset: const Offset(0, 4),
+      ),
+    ],
+  );
+}
+
 class AppTheme {
   /// Палитра намеренно оставлена прежней — переносим её в систему,
   /// а не придумываем новую.

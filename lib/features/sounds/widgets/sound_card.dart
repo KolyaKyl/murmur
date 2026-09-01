@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/theme/app_theme.dart';
 import 'package:murmur/features/sounds/data/sounds_providers.dart';
 import 'package:murmur/features/sounds/models/sound.dart';
+import 'package:murmur/core/widgets/shimmer.dart';
 import 'package:murmur/features/sounds/player/player_controller.dart';
 import 'package:murmur/features/sounds/widgets/sound_cover.dart';
 
@@ -51,7 +52,10 @@ class SoundCard extends ConsumerWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                SoundCover(sound: sound, radius: 0),
+                Shimmer(
+                  enabled: loading,
+                  child: SoundCover(sound: sound, radius: 0),
+                ),
                 // Затемнение снизу, иначе название тонет в светлой картинке.
                 const DecoratedBox(
                   decoration: BoxDecoration(
@@ -112,21 +116,6 @@ class SoundCard extends ConsumerWidget {
                       ),
                       onPressed: () =>
                           ref.read(favoritesProvider.notifier).toggle(sound.id),
-                    ),
-                  ),
-                // Пока дорожка качается — карточка это показывает.
-                // Иначе тап выглядит как «ничего не произошло», человек
-                // жмёт ещё раз и сбивает загрузку.
-                if (loading)
-                  const DecoratedBox(
-                    decoration: BoxDecoration(color: Colors.black45),
-                    child: Center(
-                      child: SizedBox(
-                        width: 26,
-                        height: 26,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2.4, color: Colors.white),
-                      ),
                     ),
                   ),
                 if (badge != null)
