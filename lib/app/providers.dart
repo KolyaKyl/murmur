@@ -2,6 +2,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/models/app_user.dart';
+import 'package:murmur/features/sounds/player/audio_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
@@ -89,6 +90,10 @@ class AmbientController extends StateNotifier<bool> {
     await _prefs.setBool(prefsKey, value);
   }
 }
+
+/// Переопределяется в main() тем обработчиком, который вернул AudioService.
+final audioHandlerProvider = Provider<MurmurAudioHandler>(
+    (ref) => throw UnimplementedError('audioHandlerProvider не переопределён'));
 
 final ambientEnabledProvider = StateNotifierProvider<AmbientController, bool>(
     (ref) =>

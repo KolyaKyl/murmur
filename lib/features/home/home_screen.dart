@@ -197,7 +197,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 class _HomeAppBar extends StatelessWidget {
   const _HomeAppBar({required this.moodIndex});
 
-  static const double _expandedHeight = 268;
+  static const double _expandedHeight = 180;
 
   final int moodIndex;
 
@@ -243,8 +243,8 @@ class _HomeAppBar extends StatelessWidget {
               bottom: 0,
               child: Image.asset(
                 'assets/logo/logo_appar_flex.png',
-                width: 196,
-                height: 196,
+                width: 164,
+                height: 164,
                 opacity: const AlwaysStoppedAnimation(0.92),
               ),
             ),

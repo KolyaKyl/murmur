@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +8,9 @@ import 'package:just_audio/just_audio.dart';
 import 'package:murmur/app/providers.dart';
 import 'package:murmur/features/sounds/data/sounds_repository.dart';
 import 'package:murmur/features/sounds/models/sound.dart';
+import 'package:murmur/features/sounds/player/audio_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 /// Одна дорожка микса.
 @immutable
@@ -75,14 +79,29 @@ class MixState {
 /// Каждая дорожка — свой плеер со своей громкостью. Мурчание — отдельный,
 /// он звучит, только когда микс пуст и приложение на экране.
 class PlayerController extends StateNotifier<MixState> {
-  PlayerController(this._repo, {bool ambientEnabled = true})
-      : _ambientEnabled = ambientEnabled,
+  PlayerController(
+    this._repo, {
+    required MurmurAudioHandler handler,
+    bool ambientEnabled = true,
+  })  : _handler = handler,
+        _ambientEnabled = ambientEnabled,
         super(const MixState()) {
     _start();
   }
 
   Future<void> _start() async {
     await _configureSession();
+    // Кнопки с экрана блокировки приходят сюда и разводятся сразу
+    // на все дорожки микса.
+    _handler
+      ..onPlayPressed = (() {
+        if (!state.playing) togglePlay();
+      })
+      ..onPausePressed = (() {
+        if (state.playing) togglePlay();
+      })
+      ..onStopPressed = clearMix;
+    addListener((_) => _publishToSystem(), fireImmediately: false);
     // Плеер пуст — значит с первой секунды мурчит котик.
     await _syncAmbient();
   }
@@ -92,6 +111,11 @@ class PlayerController extends StateNotifier<MixState> {
   static const Duration fade = Duration(milliseconds: 500);
 
   final SoundsRepository _repo;
+  final MurmurAudioHandler _handler;
+
+  /// Чтобы не дёргать систему на каждое движение ползунка громкости.
+  String? _publishedSignature;
+  String? _logoArtPath;
 
   final Map<String, AudioPlayer> _players = {};
   final AudioPlayer _ambient = AudioPlayer();
@@ -188,6 +212,74 @@ class PlayerController extends StateNotifier<MixState> {
     state = state.copyWith(
         layers: layers, playing: true, loading: false, mixName: name);
     await _syncAmbient();
+  }
+
+  /// Убрать всё из плеера: приходит по «стоп» с экрана блокировки.
+  Future<void> clearMix() async {
+    await _stopAll();
+    state = state.copyWith(layers: [], playing: false, mixName: null);
+    await _syncAmbient();
+  }
+
+  // ---------- витрина для системы ----------
+
+  Future<void> _publishToSystem() async {
+    final signature = '${state.title}|${state.playing}|${state.layers.length}';
+    if (signature == _publishedSignature) return;
+    _publishedSignature = signature;
+
+    if (state.isEmpty) {
+      _handler.clear();
+      return;
+    }
+    // Публикуем сразу, без обложки: она может тянуться из сети,
+    // а витрина должна появиться мгновенно.
+    _handler.publish(
+      title: state.title,
+      subtitle: 'MurMur',
+      playing: state.playing,
+    );
+    final art = await _artUri();
+    if (!mounted || signature != _publishedSignature) return;
+    _handler.publish(
+      title: state.title,
+      subtitle: 'MurMur',
+      playing: state.playing,
+      artUri: art,
+    );
+  }
+
+  /// Одна дорожка — её обложка. Микс — логотип: своей картинки у микса нет.
+  Future<Uri?> _artUri() async {
+    try {
+      if (state.isSingle) {
+        final path = state.layers.first.sound.coverPath;
+        if (path.isEmpty) return _logoUri();
+        return Uri.parse(await _repo.resolveUrl(path));
+      }
+      return _logoUri();
+    } catch (e) {
+      debugPrint('artUri failed: $e');
+      return null;
+    }
+  }
+
+  /// Система умеет читать обложку только из файла или по ссылке,
+  /// ассет ей не отдать — поэтому логотип один раз копируем во временную папку.
+  Future<Uri?> _logoUri() async {
+    final cached = _logoArtPath;
+    if (cached != null) return Uri.file(cached);
+    try {
+      final bytes = await rootBundle.load('assets/logo/logo.png');
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/murmur_art.png');
+      await file.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
+      _logoArtPath = file.path;
+      return Uri.file(file.path);
+    } catch (e) {
+      debugPrint('logoUri failed: $e');
+      return null;
+    }
   }
 
   // ---------- таймер сна ----------
@@ -314,6 +406,7 @@ final soundsRepositoryProvider = Provider((ref) => SoundsRepository());
 final playerProvider = StateNotifierProvider<PlayerController, MixState>(
   (ref) => PlayerController(
     ref.read(soundsRepositoryProvider),
+    handler: ref.read(audioHandlerProvider),
     ambientEnabled: ref.read(ambientEnabledProvider),
   ),
 );

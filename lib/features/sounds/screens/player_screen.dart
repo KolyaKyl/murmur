@@ -37,9 +37,9 @@ class PlayerScreen extends ConsumerWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withValues(alpha: 0.40),
-                  Colors.black.withValues(alpha: 0.80),
-                  Colors.black.withValues(alpha: 0.93),
+                  Colors.black.withValues(alpha: 0.22),
+                  Colors.black.withValues(alpha: 0.42),
+                  Colors.black.withValues(alpha: 0.55),
                 ],
               ),
             ),

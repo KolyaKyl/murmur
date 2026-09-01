@@ -13,13 +13,16 @@ class AnimatedGradient extends StatefulWidget {
     this.opacity = 1,
     this.animate = true,
     this.borderRadius,
-    this.duration = const Duration(seconds: 8),
+    this.duration = const Duration(seconds: 2),
   });
 
   final Widget? child;
   final double opacity;
   final bool animate;
   final BorderRadius? borderRadius;
+
+  /// Длительность одного прохода. Анимация идёт туда-обратно,
+  /// то есть полный цикл вдвое длиннее.
   final Duration duration;
 
   @override
