@@ -7,8 +7,12 @@ import 'package:murmur/app/providers.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/features/auth/screens/auth_gate.dart';
 import 'package:murmur/features/mood/widgets/mood_card/mood_card.dart';
-import 'package:murmur/features/mood/widgets/analysis/wellness_index.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
+import 'package:murmur/core/widgets/animated_gradient.dart';
+import 'package:murmur/core/widgets/section_label.dart';
+import 'package:murmur/features/mood/screens/analysis_screen.dart';
+import 'package:murmur/features/sounds/player/player_controller.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -52,7 +56,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       debugPrint('Home load failed: $e');
       if (mounted) {
         setState(() {
-          loadError = 'Could not load your data. Check your connection.';
+          loadError = AppL10n.of(context).couldNotLoadData;
           isLoading = false;
         });
       }
@@ -70,7 +74,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('User not loaded'),
+            Text(AppL10n.of(context).userNotLoaded),
             TextButton(
                 onPressed: () async {
                   await AuthService.signOut();
@@ -83,7 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     );
                   }
                 },
-                child: Text('Log Out')),
+                child: Text(AppL10n.of(context).logOut)),
           ],
         )),
       );
@@ -112,7 +116,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         setState(() => isLoading = true);
                         _loadMoodData();
                       },
-                      child: const Text('Try again'),
+                      child: Text(AppL10n.of(context).tryAgain),
                     ),
                   ],
                 ),
@@ -133,7 +137,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const CircularProgressIndicator(),
                         const SizedBox(height: 16),
                         Text(
-                          'Loading...',
+                          AppL10n.of(context).loading,
                           style: textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -153,28 +157,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
-                      SliverAppBar(
-                        scrolledUnderElevation: 0,
-                        pinned: false,
-                        floating: true,
-                        snap: true,
-                        backgroundColor: Theme.of(context).colorScheme.surface,
-                        elevation: 0,
-                        title: const Text('MurMur'),
-                      ),
+                      _HomeAppBar(moodIndex: ref.watch(moodIndexProvider)),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          padding:
+                              const EdgeInsets.fromLTRB(8, AppSpacing.md, 8, 0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Mood index', style: textTheme.bodyLarge),
-                              const WellnessCard(),
-                              SizedBox(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.01),
-                              Text('What do you feel now?',
-                                  style: textTheme.bodyLarge),
+                              SectionLabel(
+                                  AppL10n.of(context).whatDoYouFeelNow),
                               MoodCard(
                                 emotions: emotions,
                                 appUser: appUser,
@@ -187,12 +179,136 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       // Место под плавающий бар, иначе последний элемент
                       // прячется под стеклом.
                       SliverToBoxAdapter(
-                        child:
-                            SizedBox(height: GlassNavBar.contentInset(context)),
+                        child: SizedBox(
+                            height: GlassNavBar.contentInset(context,
+                                withPlayer:
+                                    !ref.watch(playerProvider).isEmpty)),
                       ),
                     ],
                   ),
                 ),
+    );
+  }
+}
+
+/// Шапка главного экрана: живой градиент, индекс настроения слева сверху,
+/// имя слева снизу, котик справа снизу. По скроллу схлопывается в обычный
+/// аппбар, где остаётся только имя.
+class _HomeAppBar extends StatelessWidget {
+  const _HomeAppBar({required this.moodIndex});
+
+  static const double _expandedHeight = 268;
+
+  final int moodIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return SliverAppBar(
+      pinned: true,
+      expandedHeight: _expandedHeight,
+      backgroundColor: scheme.surface,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+      flexibleSpace: FlexibleSpaceBar(
+        centerTitle: false,
+        titlePadding:
+            const EdgeInsetsDirectional.only(start: 20, bottom: AppSpacing.md),
+        title: Text(
+          'MurMur',
+          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            const AnimatedGradient(),
+            // Вуаль, иначе белый текст на светлых участках градиента тонет.
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.10),
+                    Colors.black.withValues(alpha: 0.34),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Image.asset(
+                'assets/logo/logo_appar_flex.png',
+                width: 196,
+                height: 196,
+                opacity: const AlwaysStoppedAnimation(0.92),
+              ),
+            ),
+            Positioned(
+              left: 20,
+              top: MediaQuery.paddingOf(context).top + AppSpacing.sm,
+              child: _MoodIndexBadge(moodIndex: moodIndex),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MoodIndexBadge extends StatelessWidget {
+  const _MoodIndexBadge({required this.moodIndex});
+
+  final int moodIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        FirebaseService.logEvent('home_moodindex_pressed');
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const AnalysisScreen()),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            AppL10n.of(context).moodIndex,
+            style: textTheme.labelMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.85),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '$moodIndex',
+                style: textTheme.displaySmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  height: 1,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: Icon(Icons.chevron_right,
+                    color: Colors.white.withValues(alpha: 0.82), size: 22),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/models/app_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,3 +35,61 @@ class ThemeController extends StateNotifier<bool> {
 final themeProvider = StateNotifierProvider<ThemeController, bool>(
   (ref) => throw UnimplementedError('themeProvider не переопределён в main()'),
 );
+
+/// Язык интерфейса. null — берём язык системы, если он поддерживается.
+class LocaleController extends StateNotifier<Locale?> {
+  LocaleController(this._prefs, Locale? initial) : super(initial);
+
+  static const prefsKey = 'localeCode';
+
+  /// Порядок важен: первый язык — резервный, на него откатываемся.
+  static const supported = <Locale>[
+    Locale('en'),
+    Locale('es'),
+    Locale('pt'),
+    Locale('fr'),
+    Locale('ru'),
+  ];
+
+  static const names = <String, String>{
+    'en': 'English',
+    'es': 'Español',
+    'pt': 'Português',
+    'fr': 'Français',
+    'ru': 'Русский',
+  };
+
+  final SharedPreferences _prefs;
+
+  Future<void> setLocale(Locale? locale) async {
+    state = locale;
+    if (locale == null) {
+      await _prefs.remove(prefsKey);
+    } else {
+      await _prefs.setString(prefsKey, locale.languageCode);
+    }
+  }
+}
+
+final localeProvider = StateNotifierProvider<LocaleController, Locale?>(
+  (ref) => throw UnimplementedError('localeProvider не переопределён в main()'),
+);
+
+/// Фоновое мурчание. Выключается в настройках профиля.
+class AmbientController extends StateNotifier<bool> {
+  AmbientController(this._prefs, bool initial) : super(initial);
+
+  static const prefsKey = 'ambientEnabled';
+  static const defaultEnabled = true;
+
+  final SharedPreferences _prefs;
+
+  Future<void> setEnabled(bool value) async {
+    state = value;
+    await _prefs.setBool(prefsKey, value);
+  }
+}
+
+final ambientEnabledProvider = StateNotifierProvider<AmbientController, bool>(
+    (ref) =>
+        throw UnimplementedError('ambientEnabledProvider не переопределён'));

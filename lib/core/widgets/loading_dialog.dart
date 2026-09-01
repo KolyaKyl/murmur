@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 void showLoadingDialog(BuildContext context) {
   showDialog(
@@ -23,7 +24,7 @@ void showLoadingDialog(BuildContext context) {
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
                 Text(
-                  'Loading...',
+                  AppL10n.of(context).loading,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),

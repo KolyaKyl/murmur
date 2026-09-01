@@ -17,11 +17,18 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final isDark =
       prefs.getBool(ThemeController.prefsKey) ?? ThemeController.defaultIsDark;
+  final ambient = prefs.getBool(AmbientController.prefsKey) ??
+      AmbientController.defaultEnabled;
+  final localeCode = prefs.getString(LocaleController.prefsKey);
+  final locale = localeCode == null ? null : Locale(localeCode);
 
   runApp(
     ProviderScope(
       overrides: [
         themeProvider.overrideWith((ref) => ThemeController(prefs, isDark)),
+        localeProvider.overrideWith((ref) => LocaleController(prefs, locale)),
+        ambientEnabledProvider
+            .overrideWith((ref) => AmbientController(prefs, ambient)),
       ],
       child: const MurmurApp(),
     ),

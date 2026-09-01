@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:murmur/features/mood/models/emotion.dart';
 import 'package:murmur/features/mood/widgets/mood_card/level_card.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class MoodRegistrationDialog extends StatefulWidget {
   final Emotion emotion;
@@ -70,13 +71,13 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-        title: const Text('Add Trigger'),
+        title: Text(AppL10n.of(context).addTrigger),
         content: TextField(
           cursorColor: Theme.of(context).colorScheme.onSurface,
           controller: textController,
           decoration: InputDecoration(
             prefixText: '#',
-            hintText: 'work, family etc.',
+            hintText: AppL10n.of(context).triggerHint,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppRadius.md),
               borderSide: BorderSide(
@@ -114,7 +115,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
               backgroundColor: Colors.transparent,
             ),
             child: Text(
-              'Cancel',
+              AppL10n.of(context).cancel,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontSize: 18,
                     color: Theme.of(context).colorScheme.error,
@@ -137,7 +138,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
               backgroundColor: Colors.transparent,
             ),
             child: Text(
-              'Add',
+              AppL10n.of(context).add,
               style: Theme.of(context)
                   .textTheme
                   .titleLarge
@@ -182,7 +183,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                   children: [
                     // Header
                     Text(
-                      'Record Mood',
+                      AppL10n.of(context).recordMood,
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -272,7 +273,8 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                                     backgroundColor: Theme.of(context)
                                         .colorScheme
                                         .surfaceContainer,
-                                    label: const Text('+ Add trigger'),
+                                    label: Text(
+                                        AppL10n.of(context).addTriggerButton),
                                     onPressed: () => _showAddTagDialog(context),
                                   ),
                                 ],
@@ -304,7 +306,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                             controller: _noteController,
                             focusNode: _noteFocusNode,
                             decoration: InputDecoration(
-                              hintText: 'Add optional note...',
+                              hintText: AppL10n.of(context).addOptionalNote,
                               border: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.circular(AppRadius.md),
@@ -363,7 +365,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                             backgroundColor: Colors.transparent,
                           ),
                           child: Text(
-                            'Cancel',
+                            AppL10n.of(context).cancel,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
@@ -395,7 +397,7 @@ class _MoodRegistrationDialogState extends State<MoodRegistrationDialog> {
                             backgroundColor: Colors.transparent,
                           ),
                           child: Text(
-                            'Save',
+                            AppL10n.of(context).save,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge

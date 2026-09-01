@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/core/widgets/animated_gradient.dart';
 
 class GlassNavItem {
   const GlassNavItem({
@@ -32,6 +33,8 @@ class GlassNavBar extends StatelessWidget {
     required this.onTap,
     required this.items,
     this.collapsed = false,
+    this.player,
+    this.gradientAnimating = false,
   });
 
   static const double height = 62;
@@ -46,9 +49,11 @@ class GlassNavBar extends StatelessWidget {
   static const double _slotInsetV = 5;
 
   /// Сколько места нужно оставить снизу в любом скролле таба,
-  /// чтобы последний элемент не оказался под баром.
-  static double contentInset(BuildContext context) =>
+  /// чтобы последний элемент не оказался под плашкой.
+  /// [withPlayer] — когда сверху есть строка мини-плеера.
+  static double contentInset(BuildContext context, {bool withPlayer = false}) =>
       height +
+      (withPlayer ? 55 : 0) +
       bottomInset +
       MediaQuery.paddingOf(context).bottom +
       AppSpacing.md;
@@ -59,6 +64,12 @@ class GlassNavBar extends StatelessWidget {
 
   /// Скроллят вниз — бар ужимается: подписи прячутся, высота падает.
   final bool collapsed;
+
+  /// Строка мини-плеера над табами. null — играть нечего, строки нет.
+  final Widget? player;
+
+  /// Живой градиент под стеклом. На паузе замирает.
+  final bool gradientAnimating;
 
   @override
   Widget build(BuildContext context) {
@@ -76,82 +87,115 @@ class GlassNavBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-          child: AnimatedContainer(
-            duration: animation,
-            curve: Curves.easeOut,
-            height: collapsed ? collapsedHeight : height,
-            decoration: BoxDecoration(
-              color: scheme.surface.withValues(alpha: 0.45),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(
-                color: (isDark ? Colors.white : Colors.black)
-                    .withValues(alpha: isDark ? 0.14 : 0.06),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
-                  blurRadius: 20,
-                  offset: const Offset(0, 6),
+          child: Stack(
+            children: [
+              // Тот же переливающийся градиент, что в шапке главного экрана,
+              // приглушённый: стекло его размывает, а не показывает в лоб.
+              Positioned.fill(
+                child: AnimatedGradient(
+                  opacity: 0.30,
+                  animate: gradientAnimating,
                 ),
-              ],
-            ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final itemWidth = constraints.maxWidth / items.length;
-                return Stack(
+              ),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: scheme.surface.withValues(alpha: 0.45),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  border: Border.all(
+                    color: (isDark ? Colors.white : Colors.black)
+                        .withValues(alpha: isDark ? 0.14 : 0.06),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
+                      blurRadius: 20,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Указатель едет под пальцем, а не перерисовывается
-                    // на новом месте.
-                    AnimatedPositioned(
-                      duration: animation,
-                      curve: Curves.easeOutCubic,
-                      left: itemWidth * currentIndex,
-                      top: _slotInsetV,
-                      bottom: _slotInsetV,
-                      width: itemWidth,
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: _slotInsetH),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            // Нейтральный тон, без акцента: подложка
-                            // высветляет стекло, а не красит его.
-                            color: scheme.onSurface
-                                .withValues(alpha: isDark ? 0.12 : 0.07),
-                            borderRadius: BorderRadius.circular(AppRadius.md),
-                          ),
+                    if (player != null) ...[
+                      player!,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: (isDark ? Colors.white : Colors.black)
+                              .withValues(alpha: isDark ? 0.10 : 0.06),
                         ),
                       ),
-                    ),
-                    // Positioned.fill обязателен: без него Row в Stack
-                    // получает свободные ограничения, схлопывается по высоте
-                    // и прижимается к верху бара.
-                    Positioned.fill(
-                      child: Row(
-                        children: [
-                          for (var i = 0; i < items.length; i++)
-                            SizedBox(
-                              width: itemWidth,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: _slotInsetH,
-                                  vertical: _slotInsetV,
-                                ),
-                                child: _NavButton(
-                                  item: items[i],
-                                  selected: i == currentIndex,
-                                  collapsed: collapsed,
-                                  onTap: () => onTap(i),
+                    ],
+                    AnimatedContainer(
+                      duration: animation,
+                      curve: Curves.easeOut,
+                      height: collapsed ? collapsedHeight : height,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final itemWidth = constraints.maxWidth / items.length;
+                          return Stack(
+                            children: [
+                              // Указатель едет под пальцем, а не перерисовывается
+                              // на новом месте.
+                              AnimatedPositioned(
+                                duration: animation,
+                                curve: Curves.easeOutCubic,
+                                left: itemWidth * currentIndex,
+                                top: _slotInsetV,
+                                bottom: _slotInsetV,
+                                width: itemWidth,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: _slotInsetH),
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      // Нейтральный тон, без акцента: подложка
+                                      // высветляет стекло, а не красит его.
+                                      color: scheme.onSurface.withValues(
+                                          alpha: isDark ? 0.12 : 0.07),
+                                      borderRadius:
+                                          BorderRadius.circular(AppRadius.md),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
+                              // Positioned.fill обязателен: без него Row в Stack
+                              // получает свободные ограничения, схлопывается по высоте
+                              // и прижимается к верху бара.
+                              Positioned.fill(
+                                child: Row(
+                                  children: [
+                                    for (var i = 0; i < items.length; i++)
+                                      SizedBox(
+                                        width: itemWidth,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: _slotInsetH,
+                                            vertical: _slotInsetV,
+                                          ),
+                                          child: _NavButton(
+                                            item: items[i],
+                                            selected: i == currentIndex,
+                                            collapsed: collapsed,
+                                            onTap: () => onTap(i),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ],
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

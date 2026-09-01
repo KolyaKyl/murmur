@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:murmur/core/widgets/section_label.dart';
 import 'package:flutter/services.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class DailyMoodChart extends StatefulWidget {
   final Map<DateTime, num> indexes;
@@ -95,9 +97,10 @@ class _DailyMoodChartState extends State<DailyMoodChart> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, bottom: 0.0),
+                padding: const EdgeInsets.only(
+                    left: 8.0 + SectionLabel.inset, bottom: 0.0),
                 child: Text(
-                  'Mood index (Daily)',
+                  AppL10n.of(context).moodIndexDaily,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),

@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   #other  
   cupertino_icons: ^1.0.8
@@ -29,6 +31,11 @@ dependencies:
   firebase_storage: ^12.4.7
   fl_chart: ^0.71.0
 
+  #audio
+  just_audio: ^0.9.42
+  just_audio_background: ^0.0.1-beta.15
+  audio_session: ^0.1.25
+
   #image
   image_picker: ^1.1.2
   image_cropper: ^9.1.0
@@ -44,6 +51,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
 
   assets:
     - assets/logo/

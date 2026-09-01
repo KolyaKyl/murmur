@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/app/providers.dart';
 import 'package:murmur/core/theme/app_theme.dart';
@@ -14,9 +16,18 @@ class MurmurApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(themeProvider);
+    final locale = ref.watch(localeProvider);
     return MaterialApp(
       title: 'MurMur',
       debugShowCheckedModeBanner: false,
+      locale: locale,
+      supportedLocales: LocaleController.supported,
+      localizationsDelegates: const [
+        AppL10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,

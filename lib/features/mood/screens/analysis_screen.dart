@@ -10,6 +10,8 @@ import 'package:murmur/features/mood/widgets/analysis/mood_curve_day.dart';
 import 'package:murmur/features/mood/widgets/analysis/mood_record_card.dart';
 import 'package:murmur/core/widgets/saved_dialog.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
+import 'package:murmur/features/sounds/player/player_controller.dart';
 
 class AnalysisScreen extends ConsumerStatefulWidget {
   const AnalysisScreen({super.key});
@@ -60,9 +62,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       if (mounted) {
         setState(() => isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content:
-                  Text('Could not load your records. Check your connection.')),
+          SnackBar(content: Text(AppL10n.of(context).couldNotLoadRecords)),
         );
       }
       return;
@@ -143,7 +143,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                     const CircularProgressIndicator(),
                     const SizedBox(height: 16),
                     Text(
-                      'Loading...',
+                      AppL10n.of(context).loading,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -165,7 +165,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                     pinned: true,
                     snap: false,
                     elevation: 0,
-                    title: const Text('Mood Analysis'),
+                    title: Text(AppL10n.of(context).moodAnalysis),
                   ),
                   SliverToBoxAdapter(
                     child: Padding(
@@ -256,7 +256,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'No data',
+                                      AppL10n.of(context).wellnessNoData,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge
@@ -282,7 +282,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                                   ],
                                 ),
                                 Text(
-                                  'Add a mood record',
+                                  AppL10n.of(context).suggestionNoData,
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleLarge
@@ -302,7 +302,9 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                         ),
                   // Место под плавающий бар.
                   SliverToBoxAdapter(
-                    child: SizedBox(height: GlassNavBar.contentInset(context)),
+                    child: SizedBox(
+                        height: GlassNavBar.contentInset(context,
+                            withPlayer: !ref.watch(playerProvider).isEmpty)),
                   ),
                 ],
               ),

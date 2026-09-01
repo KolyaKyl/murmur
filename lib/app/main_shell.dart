@@ -8,7 +8,10 @@ import 'package:murmur/app/widgets/glass_nav_bar.dart';
 import 'package:murmur/features/breathing/breathing_screen.dart';
 import 'package:murmur/features/home/home_screen.dart';
 import 'package:murmur/features/profile/profile_screen.dart';
-import 'package:murmur/features/sounds/sounds_screen.dart';
+import 'package:murmur/features/sounds/screens/sounds_screen.dart';
+import 'package:murmur/l10n/app_localizations.dart';
+import 'package:murmur/features/sounds/player/player_controller.dart';
+import 'package:murmur/features/sounds/widgets/mini_player.dart';
 
 /// Каркас приложения. IndexedStack, а не PageView: табы не пересоздаются
 /// при переключении, поэтому переживут будущий плеер, который должен играть
@@ -23,7 +26,8 @@ class MainShell extends ConsumerStatefulWidget {
   ConsumerState<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends ConsumerState<MainShell> {
+class _MainShellState extends ConsumerState<MainShell>
+    with WidgetsBindingObserver {
   static const _tabs = <Widget>[
     HomeScreen(),
     SoundsScreen(),
@@ -31,15 +35,24 @@ class _MainShellState extends ConsumerState<MainShell> {
     ProfileScreen(),
   ];
 
-  static const _items = <GlassNavItem>[
-    GlassNavItem(
-        icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Home'),
-    GlassNavItem(imagePath: 'assets/logo/logo_round.png', label: 'Sounds'),
-    GlassNavItem(
-        icon: Icons.air_outlined, activeIcon: Icons.air, label: 'Breathing'),
-    GlassNavItem(
-        icon: Icons.person_outline, activeIcon: Icons.person, label: 'Profile'),
-  ];
+  List<GlassNavItem> _items(BuildContext context) => <GlassNavItem>[
+        GlassNavItem(
+            icon: Icons.home_outlined,
+            activeIcon: Icons.home,
+            label: AppL10n.of(context).navHome),
+        GlassNavItem(
+            icon: Icons.volume_up_outlined,
+            activeIcon: Icons.volume_up,
+            label: AppL10n.of(context).navSounds),
+        GlassNavItem(
+            icon: Icons.air_outlined,
+            activeIcon: Icons.air,
+            label: AppL10n.of(context).navBreathing),
+        GlassNavItem(
+            icon: Icons.person_outline,
+            activeIcon: Icons.person,
+            label: AppL10n.of(context).navProfile),
+      ];
 
   int _index = 0;
   bool _barCollapsed = false;
@@ -50,7 +63,22 @@ class _MainShellState extends ConsumerState<MainShell> {
       List.generate(_tabs.length, (_) => ScrollController());
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Мурчание слышно, только пока приложение на экране. Микс — всегда.
+    ref
+        .read(playerProvider.notifier)
+        .setAppVisible(state == AppLifecycleState.resumed);
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     for (final c in _scrollControllers) {
       c.dispose();
     }
@@ -141,11 +169,18 @@ class _MainShellState extends ConsumerState<MainShell> {
             ],
           ),
         ),
-        bottomNavigationBar: GlassNavBar(
-          currentIndex: _index,
-          onTap: _onTabTap,
-          items: _items,
-          collapsed: _barCollapsed,
+        bottomNavigationBar: Builder(
+          builder: (context) {
+            final mix = ref.watch(playerProvider);
+            return GlassNavBar(
+              currentIndex: _index,
+              onTap: _onTabTap,
+              items: _items(context),
+              collapsed: _barCollapsed,
+              gradientAnimating: mix.playing,
+              player: mix.isEmpty ? null : MiniPlayer(collapsed: _barCollapsed),
+            );
+          },
         ),
       ),
     );

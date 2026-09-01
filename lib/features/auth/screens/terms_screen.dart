@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class TermsScreen extends StatefulWidget {
   const TermsScreen({super.key});
@@ -22,7 +23,7 @@ class _TermsScreenState extends State<TermsScreen> {
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     } else {
-      throw 'Could not open email client';
+      throw AppL10n.of(context).couldNotOpenEmail;
     }
   }
 
@@ -78,7 +79,9 @@ class _TermsScreenState extends State<TermsScreen> {
                       Clipboard.setData(ClipboardData(text: emailEnd))
                           .then((result) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Copied to clipboard')),
+                          SnackBar(
+                              content:
+                                  Text(AppL10n.of(context).copiedToClipboard)),
                         );
                       });
                     }),
@@ -102,13 +105,13 @@ class _TermsScreenState extends State<TermsScreen> {
             pinned: false,
             snap: false,
             elevation: 0,
-            title: const Text('Terms and Conditions'),
+            title: Text(AppL10n.of(context).termsAndConditions),
           ),
           SliverToBoxAdapter(
             child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                 child: Text(
-                  'Last updated: August 2, 2025',
+                  AppL10n.of(context).lastUpdated,
                   style: Theme.of(context).textTheme.labelSmall,
                   overflow: TextOverflow.visible,
                   textAlign: TextAlign.end,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class LevelCard extends StatefulWidget {
   final num initialLevel;
@@ -181,9 +182,9 @@ class _LevelCardState extends State<LevelCard>
                                 ),
                               ),
                               Text(
-                                'Level',
-                                style: textTheme.titleLarge
-                                    ?.copyWith(fontSize: 18),
+                                AppL10n.of(context).levelLabel,
+                                style:
+                                    textTheme.bodyLarge?.copyWith(fontSize: 18),
                               ),
                             ],
                           ),
@@ -191,7 +192,7 @@ class _LevelCardState extends State<LevelCard>
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Swipe or tap to adjust',
+                        AppL10n.of(context).swipeOrTapToAdjust,
                         style: textTheme.labelMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),

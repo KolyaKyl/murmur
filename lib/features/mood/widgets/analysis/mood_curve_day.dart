@@ -1,9 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:murmur/core/widgets/section_label.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:murmur/features/mood/models/mood_record.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class DailyMoodCurveChart extends StatefulWidget {
   final List<MoodRecord> records;
@@ -98,12 +100,13 @@ class _DailyMoodCurveChartState extends State<DailyMoodCurveChart> {
           children: [
             // Заголовок
             Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+              padding: const EdgeInsets.fromLTRB(
+                  8 + SectionLabel.inset, 0, 8 + SectionLabel.inset, 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Mood curve (Hourly)',
+                    AppL10n.of(context).moodCurveHourly,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),

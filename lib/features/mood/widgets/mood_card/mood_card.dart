@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:murmur/core/models/app_user.dart';
@@ -17,6 +15,22 @@ class MoodCard extends StatefulWidget {
 }
 
 class MoodCardState extends State<MoodCard> {
+  /// Колесо ужато на 15% от исходного. Масштабируются вместе три числа:
+  /// высота строки, размер эмодзи и высота карточки — иначе эмодзи вылезет
+  /// за пределы строки. Менять только здесь.
+  static const double scale = 0.85;
+  static const double itemExtent = 120 * scale;
+  static const double emojiSize = 80 * scale;
+
+  /// Просвет над и под центральной строкой: по нему видно, что колесо
+  /// крутится. Меньше 20 — соседние эмоции перестают выглядывать.
+  static const double peek = 20;
+
+  /// Высота ровно по содержимому. Раньше считалась от высоты экрана,
+  /// но строка колеса фиксированная, и от размера экрана менялся только
+  /// просвет — на больших телефонах он раздувался без пользы.
+  static const double cardHeight = itemExtent + peek * 2;
+
   final FixedExtentScrollController _controller = FixedExtentScrollController();
 
   int _currentIndex = 0;
@@ -64,15 +78,13 @@ class MoodCardState extends State<MoodCard> {
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: SizedBox(
-          height: max(
-              (MediaQuery.of(context).size.height - kToolbarHeight) * 0.25,
-              180),
+          height: cardHeight,
           child: Stack(
             children: [
               ListWheelScrollView.useDelegate(
                 controller: _controller,
                 useMagnifier: true,
-                itemExtent: 120,
+                itemExtent: itemExtent,
                 physics: const FixedExtentScrollPhysics(),
                 perspective: 0.001,
                 diameterRatio: 1.3,
@@ -98,13 +110,7 @@ class MoodCardState extends State<MoodCard> {
                 ),
               ),
               Positioned(
-                top: (max(
-                            (MediaQuery.of(context).size.height -
-                                    kToolbarHeight) *
-                                0.25,
-                            180) -
-                        120) /
-                    2,
+                top: peek,
                 left: 30,
                 right: 30,
                 child: Divider(
@@ -114,13 +120,7 @@ class MoodCardState extends State<MoodCard> {
                 ),
               ),
               Positioned(
-                bottom: (max(
-                            (MediaQuery.of(context).size.height -
-                                    kToolbarHeight) *
-                                0.25,
-                            180) -
-                        120) /
-                    2,
+                bottom: peek,
                 left: 30,
                 right: 30,
                 child: Divider(

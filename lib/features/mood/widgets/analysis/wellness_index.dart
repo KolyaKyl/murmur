@@ -7,6 +7,7 @@ import 'package:murmur/core/theme/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/features/mood/screens/analysis_screen.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class WellnessCard extends ConsumerStatefulWidget {
   const WellnessCard({super.key});
@@ -22,21 +23,21 @@ class _WellnessCardState extends ConsumerState<WellnessCard>
   late Animation<Color?> _color2;
 
   String _getLabelForIndex(int index) {
-    if (index == 0) return 'No data';
-    if (index >= 80) return 'Peak';
-    if (index >= 60) return 'High';
-    if (index >= 40) return 'Average';
-    if (index >= 20) return 'Low';
-    return 'Bottom';
+    if (index == 0) return AppL10n.of(context).wellnessNoData;
+    if (index >= 80) return AppL10n.of(context).wellnessPeak;
+    if (index >= 60) return AppL10n.of(context).wellnessHigh;
+    if (index >= 40) return AppL10n.of(context).wellnessAverage;
+    if (index >= 20) return AppL10n.of(context).wellnessLow;
+    return AppL10n.of(context).wellnessBottom;
   }
 
   String _getSuggestion(int index) {
-    if (index == 0) return 'Add a mood record';
-    if (index >= 80) return 'Perfect, ride the wave!';
-    if (index >= 60) return 'Looking good, respect!';
-    if (index >= 40) return 'Not bad, but kick it up!';
-    if (index >= 20) return 'Take a deep breath.';
-    return 'Caution! Need a reset.';
+    if (index == 0) return AppL10n.of(context).suggestionNoData;
+    if (index >= 80) return AppL10n.of(context).suggestionPeak;
+    if (index >= 60) return AppL10n.of(context).suggestionHigh;
+    if (index >= 40) return AppL10n.of(context).suggestionAverage;
+    if (index >= 20) return AppL10n.of(context).suggestionLow;
+    return AppL10n.of(context).suggestionBottom;
   }
 
   Icon _getIconForIndex(int index) {
@@ -230,7 +231,7 @@ class _WellnessCardState extends ConsumerState<WellnessCard>
                           constraints: BoxConstraints(
                               maxWidth: MediaQuery.of(context).size.width - 70),
                           child: Text(
-                            'Calculated as the average of the last 7 days',
+                            AppL10n.of(context).calculatedAsAverage,
                             style: textTheme.labelMedium?.copyWith(
                               // fontWeight: FontWeight.bold,
                               color: Theme.of(context)

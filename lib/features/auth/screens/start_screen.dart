@@ -7,6 +7,7 @@ import 'package:murmur/features/auth/screens/signup_screen.dart';
 import 'package:murmur/features/auth/screens/terms_screen.dart';
 import 'package:murmur/core/widgets/loading_dialog.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -115,7 +116,7 @@ class _StartScreenState extends State<StartScreen> {
       if (!mounted) return; // важно!
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Google sign-in failed')),
+        SnackBar(content: Text(AppL10n.of(context).googleSignInFailed)),
       );
     }
   }
@@ -137,7 +138,7 @@ class _StartScreenState extends State<StartScreen> {
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Apple sign-in failed')),
+        SnackBar(content: Text(AppL10n.of(context).appleSignInFailed)),
       );
     }
   }
@@ -173,7 +174,7 @@ class _StartScreenState extends State<StartScreen> {
                 // диалог недоступен, кнопка молча ничего не делала.
                 if (Platform.isIOS) ...[
                   buildGradientButton(
-                    text: 'Log In with Apple',
+                    text: AppL10n.of(context).logInWithApple,
                     imagePath: 'assets/logo/apple_icon.png',
                     onPressed: () {
                       FirebaseService.logEvent(
@@ -186,7 +187,7 @@ class _StartScreenState extends State<StartScreen> {
 
                 // Login with Google
                 buildGradientButton(
-                  text: 'Log In with Google',
+                  text: AppL10n.of(context).logInWithGoogle,
                   imagePath: 'assets/logo/google_icon.png',
                   onPressed: () {
                     FirebaseService.logEvent(
@@ -198,7 +199,7 @@ class _StartScreenState extends State<StartScreen> {
 
                 // Login with Email
                 buildGradientButton(
-                  text: 'Log In with Email',
+                  text: AppL10n.of(context).logInWithEmail,
                   icon: Icons.email,
                   onPressed: () {
                     FirebaseService.logEvent('startscreen_login_email_pressed');
@@ -213,7 +214,7 @@ class _StartScreenState extends State<StartScreen> {
 
                 // Sign Up
                 buildGradientButton(
-                  text: 'Sign Up',
+                  text: AppL10n.of(context).signUp,
                   icon: Icons.person_add,
                   onPressed: () {
                     FirebaseService.logEvent('startscreen_signup_pressed');
@@ -247,7 +248,7 @@ class _StartScreenState extends State<StartScreen> {
                     );
                   },
                   child: Text(
-                    'Terms and Conditions',
+                    AppL10n.of(context).termsAndConditions,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontSize:

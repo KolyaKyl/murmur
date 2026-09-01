@@ -222,6 +222,9 @@ class AppTheme {
       bodyColor: scheme.onSurface,
       displayColor: scheme.onSurface,
     );
+    // Две роли на весь интерфейс: bodyLarge — заголовок строки или секции
+    // (как название дорожки), labelMedium — подпись под ним (как категория).
+    // Всё остальное строится от них, чтобы экраны не разъезжались.
     return t.copyWith(
       headlineMedium: t.headlineMedium?.copyWith(
         fontWeight: FontWeight.w700,
@@ -229,8 +232,20 @@ class AppTheme {
       ),
       titleLarge: t.titleLarge?.copyWith(fontWeight: FontWeight.w600),
       titleMedium: t.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-      bodyLarge: t.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-      labelMedium: t.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
+      bodyLarge: t.bodyLarge?.copyWith(
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+      ),
+      bodyMedium: t.bodyMedium?.copyWith(fontSize: 14),
+      labelMedium: t.labelMedium?.copyWith(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: scheme.onSurfaceVariant,
+      ),
+      labelSmall: t.labelSmall?.copyWith(
+        fontSize: 11,
+        color: scheme.onSurfaceVariant,
+      ),
     );
   }
 }

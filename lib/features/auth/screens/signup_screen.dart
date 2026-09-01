@@ -5,6 +5,7 @@ import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/features/auth/auth_service.dart';
 import 'package:murmur/core/widgets/loading_dialog.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -88,7 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Google sign-in failed')),
+        SnackBar(content: Text(AppL10n.of(context).googleSignInFailed)),
       );
     }
   }
@@ -110,7 +111,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Apple sign-in failed')),
+        SnackBar(content: Text(AppL10n.of(context).appleSignInFailed)),
       );
     }
   }
@@ -131,22 +132,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      _showSnackBar('Please fill in all fields');
+      _showSnackBar(AppL10n.of(context).fillAllFields);
       return;
     }
 
     if (!EmailValidator.validate(email)) {
-      _showSnackBar('Invalid email format');
+      _showSnackBar(AppL10n.of(context).invalidEmailFormat);
       return;
     }
 
     if (password.length < 6) {
-      _showSnackBar('Password must be at least 6 characters long');
+      _showSnackBar(AppL10n.of(context).passwordTooShort);
       return;
     }
 
     if (password != confirmPassword) {
-      _showSnackBar('Passwords do not match');
+      _showSnackBar(AppL10n.of(context).passwordsDoNotMatch);
       return;
     }
 
@@ -300,7 +301,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextField(
                     cursorColor: colorScheme.onSurface,
                     controller: _usernameController,
-                    decoration: _customDecoration('Username'),
+                    decoration: _customDecoration(AppL10n.of(context).username),
                   ),
                   const SizedBox(height: 16),
 
@@ -309,7 +310,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     cursorColor: colorScheme.onSurface,
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: _customDecoration('Email'),
+                    decoration: _customDecoration(AppL10n.of(context).email),
                   ),
                   const SizedBox(height: 16),
 
@@ -319,7 +320,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: _customDecoration(
-                      'Password',
+                      AppL10n.of(context).password,
                       isPassword: true,
                       toggleVisibility: () {
                         setState(() {
@@ -337,7 +338,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
                     decoration: _customDecoration(
-                      'Confirm Password',
+                      AppL10n.of(context).confirmPassword,
                       isPassword: true,
                       toggleVisibility: () {
                         setState(() {
@@ -351,7 +352,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                   // Sign Up Button
                   buildGradientButton(
-                    text: 'Sign Up',
+                    text: AppL10n.of(context).signUp,
                     icon: Icons.person_add,
                     onPressed: () {
                       FirebaseService.logEvent('signupscreen_signup_pressed');
@@ -363,7 +364,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Divider
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: dividerWithText('or Log In with'),
+                    child: dividerWithText(AppL10n.of(context).orLogInWith),
                   ),
                   const SizedBox(height: 8),
 
@@ -374,7 +375,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       // Вход через Apple — только на iOS, см. start_screen.
                       if (Platform.isIOS) ...[
                         buildGradientButton(
-                          text: 'Log In with Apple',
+                          text: AppL10n.of(context).logInWithApple,
                           imagePath: 'assets/logo/apple_icon.png',
                           square: true,
                           onPressed: () {
@@ -386,7 +387,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         const SizedBox(width: 16),
                       ],
                       buildGradientButton(
-                        text: 'Log In with Google',
+                        text: AppL10n.of(context).logInWithGoogle,
                         imagePath: 'assets/logo/google_icon.png',
                         square: true,
                         onPressed: () {
@@ -406,7 +407,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Navigator.pushNamed(context, '/login');
                     },
                     child: Text(
-                      'Already have an account? Log In',
+                      AppL10n.of(context).alreadyHaveAccount,
                       style: theme.textTheme.labelLarge,
                     ),
                   ),

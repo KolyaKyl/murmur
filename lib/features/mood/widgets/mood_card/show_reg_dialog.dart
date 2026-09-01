@@ -5,6 +5,7 @@ import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/features/mood/widgets/mood_card/mood_registration_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/app/providers.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 Future<bool> showMoodRegistrationDialog({
   required BuildContext context,
@@ -85,7 +86,7 @@ Future<bool> showMoodRegistrationDialog({
       debugPrint('Error saving mood: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save mood')),
+          SnackBar(content: Text(AppL10n.of(context).failedToSaveMood)),
         );
       }
       return false;

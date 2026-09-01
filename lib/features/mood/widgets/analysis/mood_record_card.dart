@@ -9,6 +9,7 @@ import 'package:murmur/features/mood/widgets/mood_card/show_reg_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/app/providers.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class MoodRecordCard extends ConsumerStatefulWidget {
   final MoodRecord record;
@@ -57,7 +58,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Mood Record',
+                    AppL10n.of(context).moodRecord,
                     style: textTheme.labelMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant),
                     overflow: TextOverflow.ellipsis,
@@ -149,13 +150,13 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                                 MediaQuery.of(context).size.height -
                                     details.globalPosition.dy,
                               ),
-                              items: const [
+                              items: [
                                 PopupMenuItem(
                                   value: 'edit',
                                   height: 30,
                                   child: SizedBox(
                                     width: 80,
-                                    child: Text('Edit',
+                                    child: Text(AppL10n.of(context).edit,
                                         style: TextStyle(fontSize: 14)),
                                   ),
                                 ),
@@ -164,7 +165,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                                   height: 30,
                                   child: SizedBox(
                                     width: 80,
-                                    child: Text('Delete',
+                                    child: Text(AppL10n.of(context).delete,
                                         style: TextStyle(fontSize: 14)),
                                   ),
                                 ),
@@ -196,10 +197,11 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                               await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: const Text('Delete record?'),
-                                  content: const Text(
+                                  title:
+                                      Text(AppL10n.of(context).deleteRecordQ),
+                                  content: Text(
                                       overflow: TextOverflow.clip,
-                                      'This action will permanently delete this Mood Record'),
+                                      AppL10n.of(context).deleteRecordBody),
                                   actions: [
                                     FilledButton(
                                       onPressed: () {
@@ -217,7 +219,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                                         backgroundColor: Colors.transparent,
                                       ),
                                       child: Text(
-                                        'Cancel',
+                                        AppL10n.of(context).cancel,
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleLarge
@@ -262,7 +264,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                                         backgroundColor: Colors.transparent,
                                       ),
                                       child: Text(
-                                        'Delete',
+                                        AppL10n.of(context).delete,
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleLarge
@@ -368,7 +370,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              'Index:',
+                                              AppL10n.of(context).indexLabel,
                                               style: textTheme.titleLarge
                                                   ?.copyWith(
                                                 fontSize: 18,
@@ -409,7 +411,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Hold for options',
+                              AppL10n.of(context).holdForOptions,
                               style: textTheme.labelMedium?.copyWith(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -430,7 +432,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
             if (widget.record.selectedTriggers.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                'Triggers:',
+                AppL10n.of(context).triggersLabel,
                 style: textTheme.labelMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
                 overflow: TextOverflow.ellipsis,
@@ -470,7 +472,7 @@ class MoodRecordCardState extends ConsumerState<MoodRecordCard> {
             // Note
             if (widget.record.note.isNotEmpty) ...[
               Text(
-                'Note:',
+                AppL10n.of(context).noteLabel,
                 style: textTheme.labelMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
                 overflow: TextOverflow.ellipsis,

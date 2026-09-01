@@ -5,6 +5,7 @@ import 'package:murmur/features/auth/auth_service.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/core/widgets/loading_dialog.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -130,8 +131,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter both email and password'),
+        SnackBar(
+          content: Text(AppL10n.of(context).enterBothEmailAndPassword),
         ),
       );
       return;
@@ -139,8 +140,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!EmailValidator.validate(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid email format'),
+        SnackBar(
+          content: Text(AppL10n.of(context).invalidEmailFormat),
         ),
       );
       return;
@@ -161,11 +162,11 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      String message = 'Login failed';
+      String message = AppL10n.of(context).loginFailed;
       if (e.code == 'user-not-found') {
-        message = 'No user found for this email';
+        message = AppL10n.of(context).noUserForEmail;
       } else if (e.code == 'wrong-password') {
-        message = 'Incorrect password';
+        message = AppL10n.of(context).incorrectPassword;
       }
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -216,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     cursorColor: colorScheme.onSurface,
-                    decoration: _customDecoration('Email'),
+                    decoration: _customDecoration(AppL10n.of(context).email),
                   ),
                   const SizedBox(height: 16),
 
@@ -226,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: _customDecoration(
-                      'Password',
+                      AppL10n.of(context).password,
                       isPassword: true,
                       toggleVisibility: () {
                         setState(() {
@@ -245,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushNamed(context, '/forgot');
                       },
                       child: Text(
-                        'Forgot Password?',
+                        AppL10n.of(context).forgotPasswordQ,
                         style: theme.textTheme.labelLarge,
                       ),
                     ),
@@ -254,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Log In Button
                   buildGradientButton(
-                    text: 'Log In',
+                    text: AppL10n.of(context).logIn,
                     icon: Icons.login,
                     onPressed: () {
                       FirebaseService.logEvent('loginscreen_login_pressed');
@@ -270,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, '/signup');
                     },
                     child: Text(
-                      'First time here? Sign Up',
+                      AppL10n.of(context).firstTimeHere,
                       style: theme.textTheme.labelLarge,
                     ),
                   ),

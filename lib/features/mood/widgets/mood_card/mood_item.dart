@@ -9,6 +9,7 @@ import 'package:murmur/features/mood/widgets/mood_card/show_reg_dialog.dart';
 import 'package:murmur/core/widgets/saved_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/features/mood/widgets/mood_card/mood_card.dart';
 
 class MoodItem extends ConsumerWidget {
   final AppUser appUser;
@@ -61,7 +62,7 @@ class MoodItem extends ConsumerWidget {
                     color: Colors.transparent,
                     child: Text(
                       emotion.emoji,
-                      style: const TextStyle(fontSize: 80),
+                      style: const TextStyle(fontSize: MoodCardState.emojiSize),
                       textScaler: TextScaler.linear(1.0),
                     ),
                   ),
@@ -82,8 +83,8 @@ class MoodItem extends ConsumerWidget {
                       color: Colors.transparent,
                       child: Text(
                         emotion.name,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontSize: 28,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontSize: 26,
                               fontWeight: FontWeight.w500,
                             ),
                         textScaler: TextScaler.linear(1.0),
@@ -93,8 +94,8 @@ class MoodItem extends ConsumerWidget {
                   ),
                   Text(
                     emotion.description,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: 18,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontSize: 13,
                         ),
                     textScaler: TextScaler.linear(1.0),
                     overflow: TextOverflow.ellipsis,

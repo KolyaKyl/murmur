@@ -4,6 +4,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:murmur/core/firebase/firebase_service.dart';
 import 'package:murmur/core/widgets/loading_dialog.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -54,14 +55,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your email')),
+        SnackBar(content: Text(AppL10n.of(context).enterYourEmail)),
       );
       return;
     }
 
     if (!EmailValidator.validate(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid email format')),
+        SnackBar(content: Text(AppL10n.of(context).invalidEmailFormat)),
       );
       return;
     }
@@ -75,12 +76,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       Navigator.pop(context);
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Reset link sent to your email')),
+        SnackBar(content: Text(AppL10n.of(context).resetLinkSent)),
       );
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       Navigator.pop(context);
-      String message = 'Something went wrong. Try again.';
+      String message = AppL10n.of(context).somethingWentWrong;
       if (e.code == 'user-not-found') {
         message = 'No user found with this email.';
       }
@@ -120,7 +121,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           //   icon: const Icon(Icons.arrow_back),
           //   onPressed: () => Navigator.pop(context),
           // ),
-          title: const Text('Forgot Password'),
+          title: Text(AppL10n.of(context).forgotPassword),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -146,7 +147,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     cursorColor: colorScheme.onSurface,
-                    decoration: _customDecoration('Email'),
+                    decoration: _customDecoration(AppL10n.of(context).email),
                   ),
                   const SizedBox(height: 24),
                   InkWell(
@@ -183,7 +184,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                             Flexible(
                               child: Text(
-                                'Reset Password',
+                                AppL10n.of(context).resetPassword,
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   color: colorScheme.onSurface,
                                   fontWeight: FontWeight.w600,

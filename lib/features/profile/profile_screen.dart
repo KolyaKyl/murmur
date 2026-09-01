@@ -14,6 +14,9 @@ import 'package:murmur/features/mood/screens/analysis_screen.dart';
 import 'package:murmur/features/auth/screens/auth_gate.dart';
 import 'package:murmur/core/theme/app_theme.dart';
 import 'package:murmur/app/widgets/glass_nav_bar.dart';
+import 'package:murmur/l10n/app_localizations.dart';
+import 'package:murmur/features/sounds/screens/library_lists_screen.dart';
+import 'package:murmur/features/sounds/player/player_controller.dart';
 
 /// Заготовка таба «Профиль». Содержимое перенесено из удалённого AppDrawer
 /// как есть, кроме психологических тестов. На экран пока никто не ведёт —
@@ -31,6 +34,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _pickAndUploadProfilePhoto(AppUser user) async {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppL10n.of(context);
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked == null) return;
@@ -39,14 +43,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       sourcePath: picked.path,
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'Crop Photo',
+          toolbarTitle: l10n.cropPhoto,
           toolbarColor: scheme.surface,
           toolbarWidgetColor: scheme.onSurface,
           lockAspectRatio: true,
           cropStyle: CropStyle.circle,
         ),
         IOSUiSettings(
-          title: 'Crop Photo',
+          title: l10n.cropPhoto,
           aspectRatioLockEnabled: true,
           cropStyle: CropStyle.circle,
         ),
@@ -73,7 +77,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     } else if (mounted) {
       setState(() => _avatarImage = null);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not upload the photo. Try again.')),
+        SnackBar(content: Text(AppL10n.of(context).couldNotUploadPhoto)),
       );
     }
 
@@ -114,7 +118,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           onTap: () => FocusScope.of(context).unfocus(),
           child: AlertDialog(
             backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-            title: const Text('Profile Settings'),
+            title: Text(AppL10n.of(context).profileSettings),
             content: StatefulBuilder(
               builder: (context, setModalState) {
                 return Column(
@@ -125,7 +129,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       cursorColor: Theme.of(context).colorScheme.onSurface,
                       controller: nameController,
                       decoration: InputDecoration(
-                        labelText: 'Name',
+                        labelText: AppL10n.of(context).nameLabel,
                         labelStyle: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -156,7 +160,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 20),
                     InputDecorator(
                       decoration: InputDecoration(
-                        labelText: 'Gender',
+                        labelText: AppL10n.of(context).genderLabel,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppRadius.md),
                           borderSide: BorderSide(
@@ -186,7 +190,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 20),
                     InputDecorator(
                       decoration: InputDecoration(
-                        labelText: 'Birth Date',
+                        labelText: AppL10n.of(context).birthDateLabel,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppRadius.md),
                           borderSide: BorderSide(
@@ -219,7 +223,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         onPressed: () async {
                           _showDeleteConfirmDialog(context, user);
                         },
-                        child: Text('Delete profile?')),
+                        child: Text(AppL10n.of(context).deleteProfileQ)),
                   ],
                 );
               },
@@ -239,7 +243,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   backgroundColor: Colors.transparent,
                 ),
                 child: Text(
-                  'Cancel',
+                  AppL10n.of(context).cancel,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontSize: 18,
                         color: Theme.of(context).colorScheme.error,
@@ -270,7 +274,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   backgroundColor: Colors.transparent,
                 ),
                 child: Text(
-                  'Save',
+                  AppL10n.of(context).save,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -297,23 +301,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) => AlertDialog(
             backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-            title: const Text('Delete Profile'),
+            title: Text(AppL10n.of(context).deleteProfile),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   isDeleting
-                      ? 'Deleting your data...'
-                      : 'This action will permanently delete your profile and all your data. Are you sure you want to continue?',
+                      ? AppL10n.of(context).deletingYourData
+                      : AppL10n.of(context).deleteProfileBody,
                 ),
                 if (!isDeleting && needsPassword) ...[
                   const SizedBox(height: AppSpacing.md),
                   TextField(
                     controller: passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Confirm your password',
+                    decoration: InputDecoration(
+                      labelText: AppL10n.of(context).confirmYourPassword,
                     ),
                   ),
                 ],
@@ -341,7 +345,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     backgroundColor: Colors.transparent,
                   ),
                   child: Text(
-                    'Cancel',
+                    AppL10n.of(context).cancel,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontSize: 18,
                           color: Theme.of(context).colorScheme.error,
@@ -366,16 +370,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     } on FirebaseAuthException catch (e) {
                       setDialogState(() {
                         isDeleting = false;
-                        errorText = e.code == 'wrong-password' ||
-                                e.code == 'invalid-credential'
-                            ? 'Wrong password.'
-                            : e.message ?? 'Could not delete the account.';
+                        errorText = switch (e.code) {
+                          'wrong-password' ||
+                          'invalid-credential' =>
+                            AppL10n.of(context).wrongPassword,
+                          'password-required' =>
+                            AppL10n.of(context).enterPasswordToContinue,
+                          'reauth-cancelled' =>
+                            AppL10n.of(context).signInCancelled,
+                          _ => AppL10n.of(context).couldNotDeleteAccount,
+                        };
                       });
                       return;
                     } catch (e) {
                       setDialogState(() {
                         isDeleting = false;
-                        errorText = 'Could not delete the account. Try again.';
+                        errorText = AppL10n.of(context).couldNotDeleteAccount;
                       });
                       return;
                     }
@@ -398,7 +408,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     backgroundColor: Colors.transparent,
                   ),
                   child: Text(
-                    'Delete',
+                    AppL10n.of(context).delete,
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -418,6 +428,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  void _showLanguageDialog(BuildContext context) {
+    final current = ref.read(localeProvider)?.languageCode;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(AppL10n.of(context).language),
+        contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: RadioGroup<String>(
+            groupValue: current,
+            onChanged: (code) async {
+              if (code == null) return;
+              await ref.read(localeProvider.notifier).setLocale(Locale(code));
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                for (final locale in LocaleController.supported)
+                  RadioListTile<String>(
+                    value: locale.languageCode,
+                    title: Text(LocaleController.names[locale.languageCode]!),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Дата рождения и пол одной строкой. Пол «Unknown» не показываем —
+  /// это значение по умолчанию, а не выбор пользователя.
+  String _personalLine(AppUser user) {
+    final parts = <String>[
+      if (user.birthDate != null)
+        DateFormat('yyyy-MM-dd').format(user.birthDate!),
+      if (user.gender != null && user.gender != 'Unknown') user.gender!,
+    ];
+    return parts.join(' · ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = ref.watch(themeProvider);
@@ -429,155 +482,152 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
 
     return Scaffold(
+      appBar: AppBar(title: Text(AppL10n.of(context).navProfile)),
       body: ListView(
-        padding: EdgeInsets.only(bottom: GlassNavBar.contentInset(context)),
+        padding: EdgeInsets.only(
+            bottom: GlassNavBar.contentInset(context,
+                withPlayer: !ref.watch(playerProvider).isEmpty)),
         children: [
-          const SizedBox(height: kToolbarHeight),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 50, 16, 30),
-            child: Column(
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.lg),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (!_isUploading) {
-                      _pickAndUploadProfilePhoto(user);
-                    }
+                    if (!_isUploading) _pickAndUploadProfilePhoto(user);
                   },
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 146,
-                        height: 146,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [
-                              Theme.of(context).colorScheme.primary,
-                              Theme.of(context).colorScheme.secondary,
-                              Theme.of(context).colorScheme.onPrimaryFixed,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
+                  child: Container(
+                    width: 92,
+                    height: 92,
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.secondary,
+                          Theme.of(context).colorScheme.onPrimaryFixed,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      Container(
-                        width: 140,
-                        height: 140,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.transparent,
-                        ),
-                        child: ClipOval(
-                          child: _isUploading
-                              ? const Center(child: CircularProgressIndicator())
-                              : _buildProfileImage(user),
-                        ),
+                    ),
+                    child: ClipOval(
+                      child: _isUploading
+                          ? const Center(child: CircularProgressIndicator())
+                          : _buildProfileImage(user),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        user.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _personalLine(user),
+                        style: Theme.of(context).textTheme.labelMedium,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        user.email,
+                        style: Theme.of(context).textTheme.labelMedium,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 15),
-                Text(
-                  user.email,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontSize: 18),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  user.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontSize: 18),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (user.birthDate != null)
-                      Text(
-                        DateFormat('yyyy-MM-dd').format(user.birthDate!),
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                      ),
-                    user.gender == 'Unknown'
-                        ? SizedBox.shrink()
-                        : Text(
-                            ', ${user.gender ?? ''}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                          ),
-                  ],
+                // Редактирование живёт карандашом рядом с данными,
+                // отдельной строки в списке для него больше нет.
+                IconButton(
+                  tooltip: AppL10n.of(context).editProfile,
+                  icon: const Icon(Icons.edit_outlined),
+                  onPressed: () => _showEditProfileDialog(context, user),
                 ),
               ],
             ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.history),
+            title: Text(AppL10n.of(context).recentlyPlayed),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) =>
+                    const SoundListScreen(kind: SoundListKind.recent))),
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite_border),
+            title: Text(AppL10n.of(context).favorites),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) =>
+                    const SoundListScreen(kind: SoundListKind.favorites))),
+          ),
+          ListTile(
+            leading: const Icon(Icons.library_music_outlined),
+            title: Text(AppL10n.of(context).myMixes),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const MixesScreen())),
           ),
           ListTile(
             leading: const Icon(Icons.insert_chart_outlined_rounded),
-            title: const Text('Mood Analysis'),
+            title: Text(AppL10n.of(context).moodAnalysis),
+            trailing: const Icon(Icons.chevron_right),
             onTap: () {
               FirebaseService.logEvent('profile_moodanal_pressed');
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const AnalysisScreen(),
-              ));
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AnalysisScreen()),
+              );
             },
           ),
-          const SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
-            child: Row(
-              children: [
-                Text(
-                  'Dark Theme',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w400,
-                      ),
-                ),
-                const SizedBox(width: 30),
-                Switch(
-                  value: isDarkTheme,
-                  onChanged: (val) async {
-                    await ref.read(themeProvider.notifier).setDark(val);
-                    await firebaseService.updateUserThemePreference(val);
-                  },
-                ),
-              ],
-            ),
+          const Divider(height: AppSpacing.lg, indent: 16, endIndent: 16),
+          SwitchListTile(
+            secondary: const Icon(Icons.pets_outlined),
+            title: Text(AppL10n.of(context).purring),
+            subtitle: Text(AppL10n.of(context).purringSubtitle),
+            value: ref.watch(ambientEnabledProvider),
+            onChanged: (val) async {
+              await ref.read(ambientEnabledProvider.notifier).setEnabled(val);
+              await ref.read(playerProvider.notifier).setAmbientEnabled(val);
+            },
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.dark_mode_outlined),
+            title: Text(AppL10n.of(context).darkTheme),
+            value: isDarkTheme,
+            onChanged: (val) async {
+              await ref.read(themeProvider.notifier).setDark(val);
+              await firebaseService.updateUserThemePreference(val);
+            },
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Profile Settings'),
-            onTap: () {
-              _showEditProfileDialog(context, user);
-            },
+            leading: const Icon(Icons.language),
+            title: Text(AppL10n.of(context).language),
+            trailing: Text(
+              LocaleController.names[ref.watch(localeProvider)?.languageCode ??
+                      Localizations.localeOf(context).languageCode] ??
+                  '',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            onTap: () => _showLanguageDialog(context),
           ),
           ListTile(
             leading: const Icon(Icons.logout),
-            title: const Text('Log Out'),
+            title: Text(AppL10n.of(context).logOut),
             onTap: () async {
               await AuthService.signOut();
               ref.read(appUserProvider.notifier).state = null;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:murmur/core/theme/app_theme.dart';
+import 'package:murmur/l10n/app_localizations.dart';
 
 void showSuccessOverlay(BuildContext context, {bool isDeleted = false}) {
   final overlay = Overlay.of(context);
@@ -77,7 +78,7 @@ class _DoubleCheckIconState extends State<_DoubleCheckIcon>
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Deleted',
+                    AppL10n.of(context).deletedLabel,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -95,7 +96,7 @@ class _DoubleCheckIconState extends State<_DoubleCheckIcon>
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Saved',
+                    AppL10n.of(context).savedLabel,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
